@@ -1,5 +1,13 @@
 print("Lure System")
 
+for i, v in pairs(debug.getupvalue(require(game:GetService("ReplicatedStorage").Fsys).load("RouterClient").init, 4)) do
+    v.Name = i
+end
+
+for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
+  v:Disable()
+end
+
 _G.BaitID = "lures_2023_campfire_cookies"
 _G.BaitName = "Lures2023CampfireCookies"
 
