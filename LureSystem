@@ -1,0 +1,116 @@
+print("Lure System")
+
+_G.BaitID = "lures_2023_campfire_cookies"
+_G.BaitName = "Lures2023CampfireCookies"
+
+local playerName = game.Players.LocalPlayer.Name
+local function LureFeed()
+
+    for i, v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.food) do
+        if v.id == _G.BaitID then
+            cookieid = v.unique
+        end
+    end
+    local args2 = {
+        [1] = "Holdables",
+        [2] = _G.BaitName
+    }
+    
+    game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("DownloadsAPI/Download"):InvokeServer(unpack(args2))
+    
+    local furnitureTypes = {}
+    for i = 1, 33 do
+        table.insert(furnitureTypes, "f-" .. i)
+    end
+    
+    for _, furniture in ipairs(furnitureTypes) do
+        local args = {
+            [1] = game:GetService("Players").LocalPlayer,
+            [2] = furniture,  -- Use the current furniture type
+            [3] = "UseBlock",
+            [4] = {
+                ["bait_unique"] = tostring(cookieid)
+            },
+            [5] = workspace:WaitForChild(playerName) 
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("HousingAPI/ActivateFurniture"):InvokeServer(unpack(args))
+        
+        -- No wait here, so it will call the remote as fast as possible
+        task.wait(0.1)
+    end
+    
+
+    local args2 = {
+        [1] = "Holdables",
+        [2] = _G.BaitName
+    }
+
+    game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("DownloadsAPI/Download"):InvokeServer(unpack(args2))
+end
+
+--Activate lure!
+local function ActivateLure()  
+    local plr = game:GetService("Players").LocalPlayer
+    local furnitureTypes2 = {}
+    
+    for i = 1, 33 do
+        table.insert(furnitureTypes2, "f-" .. i)
+    end
+    
+    for _, furniture2 in ipairs(furnitureTypes2) do
+        local args = {
+            [1] = game:GetService("Players").LocalPlayer,
+            [2] = furniture2,
+            [3] = "UseBlock",
+            [4] = true,
+            [5] = workspace:WaitForChild(playerName) 
+        }
+        task.wait(0.1)
+        
+        local function invokeServerCall()
+            game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("HousingAPI/ActivateFurniture"):InvokeServer(unpack(args))
+        end
+        
+        local success, errorMsg = pcall(invokeServerCall)
+        if not success then
+            if args[4] == false then
+                return
+            end
+        end
+    end
+end
+
+--Shane buy lure here
+local function BuyLure()
+local args5 = {
+    [1] = {
+        [1] = {
+            ["kind"] = "lures_2023_normal_lure",
+            ["properties"] = {
+                ["cframe"] = CFrame.new(13.5, 0, -22.60009765625, 1, -3.82137093032941e-15, 8.742277657347586e-08, 3.82137093032941e-15, 1, 0, -8.742277657347586e-08, 0, 1)
+            }
+        }
+    }
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("HousingAPI/BuyFurnitures"):InvokeServer(unpack(args5))
+end
+
+
+local function repeatedlyInvokeLureFeed()
+    while true do
+        LureFeed()
+        wait(60) -- Waits for 90 seconds or 1.5 minutes
+    end
+end
+
+local function CallLure()
+    while true do
+        ActivateLure()
+        wait(60)
+    end
+end
+
+spawn(BuyLure)
+spawn(CallLure)
+spawn(repeatedlyInvokeLureFeed)
