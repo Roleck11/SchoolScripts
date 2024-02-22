@@ -1,0 +1,263 @@
+if not game:IsLoaded() then
+    while not game:IsLoaded() do wait(1) end
+end
+
+print("Lure System")
+repeat task.wait() until game:IsLoaded() and game:GetService("ReplicatedStorage"):FindFirstChild("ClientModules") and game:GetService("ReplicatedStorage").ClientModules:FindFirstChild("Core") and game:GetService("ReplicatedStorage").ClientModules.Core:FindFirstChild("UIManager") and game:GetService("ReplicatedStorage").ClientModules.Core:FindFirstChild("UIManager").Apps:FindFirstChild("TransitionsApp") and game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("TransitionsApp") and game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("TransitionsApp"):FindFirstChild("Whiteout")
+
+if game:GetService("Players").LocalPlayer.PlayerGui.TransitionsApp:FindFirstChild("Whiteout").Visible then 
+    game:GetService("Players").LocalPlayer.PlayerGui.TransitionsApp:FindFirstChild("Whiteout").Visible = false 
+end
+
+for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
+  v:Disable()
+end
+
+
+for i, v in pairs(debug.getupvalue(require(game:GetService("ReplicatedStorage").Fsys).load("RouterClient").init, 4)) do
+    v.Name = i
+end
+
+---------------------------------------------------------------
+
+getgenv().firesignal = function(signal, ...)
+	local connections = getconnections(signal)
+	for _, connection in ipairs(connections) do
+		connection:Fire(...)
+	end
+end
+
+function clickUiButton(button, state)
+    local buttonPosX = button.AbsolutePosition.X + button.AbsoluteSize.X / 2
+    local buttonPosY = button.AbsolutePosition.Y + 66
+    game:GetService("VirtualInputManager"):SendMouseButtonEvent(buttonPosX, buttonPosY, 0, state, game, 1)
+end
+
+repeat
+    if game:GetService("Players").LocalPlayer.PlayerGui.NewsApp.EnclosingFrame.MainFrame.Contents.PlayButton.Visible then
+        firesignal(game:GetService("Players").LocalPlayer.PlayerGui.NewsApp.EnclosingFrame.MainFrame.Contents.PlayButton.MouseButton1Click)
+        firesignal(game:GetService("Players").LocalPlayer.PlayerGui.NewsApp.EnclosingFrame.MainFrame.Contents.PlayButton.MouseButton1Down)
+        firesignal(game:GetService("Players").LocalPlayer.PlayerGui.NewsApp.EnclosingFrame.MainFrame.Contents.PlayButton.Activated)
+    end
+    if game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RoleChooserDialog.ChooseParent.Visible then
+        firesignal(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RoleChooserDialog.ChooseParent.MouseButton1Click)
+        firesignal(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RoleChooserDialog.ChooseParent.MouseButton1Down)
+        firesignal(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RoleChooserDialog.ChooseParent.Activated)
+    end
+    task.wait(1.1)
+    -- After Choose Parent
+    game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog:WaitForChild("RobuxProductDialog")
+    if game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Visible then 
+        for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Buttons:GetChildren()) do 
+            if v.ClassName == "ImageButton" then 
+                clickUiButton(v,true)
+                task.wait()
+                clickUiButton(v,false)
+            end
+        end
+    end
+    game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("DailyLoginApp")
+    if game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Enabled and game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Frame.Visible then 
+        for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Frame.Body.Buttons:GetChildren()) do 
+            if v.Name == "ClaimButton" then
+                clickUiButton(v,true)
+                task.wait()
+                clickUiButton(v,false)
+            end 
+        end
+    end
+    game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog:WaitForChild("UpdatesDialog")
+    if game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Visible then 
+        for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Buttons:GetChildren()) do 
+            if v.ClassName == "ImageButton" then 
+                clickUiButton(v,true)
+                task.wait()
+                clickUiButton(v,false)
+            end
+        end
+    end
+until game:GetService("Players").LocalPlayer.Character and workspace.Camera.CameraSubject == game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
+
+task.spawn(function()
+    repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    task.wait(4)
+    game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog:WaitForChild("RobuxProductDialog")
+    if game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Visible then 
+        for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Buttons:GetChildren()) do 
+            if v.ClassName == "ImageButton" then 
+                clickUiButton(v,true)
+                task.wait()
+                clickUiButton(v,false)
+            end
+        end
+    end
+    wait(0.5)
+    game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("DailyLoginApp")
+    if game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Enabled and game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Frame.Visible then 
+        for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Frame.Body.Buttons:GetChildren()) do 
+            if v.Name == "ClaimButton" then
+                clickUiButton(v,true)
+                task.wait()
+                clickUiButton(v,false)
+                wait(0.5)
+                clickUiButton(v,true)
+                task.wait()
+                clickUiButton(v,false)
+            end 
+        end
+    end
+    wait(0.5)
+    game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog:WaitForChild("UpdatesDialog")
+    if game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Visible then 
+        for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Buttons:GetChildren()) do 
+            if v.ClassName == "ImageButton" then 
+                clickUiButton(v,true)
+                task.wait()
+                clickUiButton(v,false)
+            end
+        end
+    end
+end)
+
+
+_G.BaitID = "fire_dimension_2024_burnt_bites_bait"
+_G.BaitName = "FireDimension2024BurntBitesBait"
+
+local playerName = game.Players.LocalPlayer.Name
+local function LureFeed()
+
+    for i, v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.food) do
+        if v.id == _G.BaitID then
+            cookieid = v.unique
+        end
+    end
+    local args2 = {
+        [1] = "Holdables",
+        [2] = _G.BaitName
+    }
+    
+    game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("DownloadsAPI/Download"):InvokeServer(unpack(args2))
+    
+    local furnitureTypes = {}
+    for i = 1, 33 do
+        table.insert(furnitureTypes, "f-" .. i)
+    end
+    
+    for _, furniture in ipairs(furnitureTypes) do
+        local args = {
+            [1] = game:GetService("Players").LocalPlayer,
+            [2] = furniture,  -- Use the current furniture type
+            [3] = "UseBlock",
+            [4] = {
+                ["bait_unique"] = tostring(cookieid)
+            },
+            [5] = workspace:WaitForChild(playerName) 
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("HousingAPI/ActivateFurniture"):InvokeServer(unpack(args))
+        
+        -- No wait here, so it will call the remote as fast as possible
+        task.wait(0.1)
+    end
+    
+
+    local args2 = {
+        [1] = "Holdables",
+        [2] = _G.BaitName
+    }
+
+    game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("DownloadsAPI/Download"):InvokeServer(unpack(args2))
+end
+
+--Activate lure!
+local function ActivateLure()  
+    local plr = game:GetService("Players").LocalPlayer
+    local furnitureTypes2 = {}
+    
+    for i = 1, 33 do
+        table.insert(furnitureTypes2, "f-" .. i)
+    end
+    
+    for _, furniture2 in ipairs(furnitureTypes2) do
+        local args = {
+            [1] = game:GetService("Players").LocalPlayer,
+            [2] = furniture2,
+            [3] = "UseBlock",
+            [4] = true,
+            [5] = workspace:WaitForChild(playerName) 
+        }
+        task.wait(0.1)
+        
+        local function invokeServerCall()
+            game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("HousingAPI/ActivateFurniture"):InvokeServer(unpack(args))
+        end
+        
+        local success, errorMsg = pcall(invokeServerCall)
+        if not success then
+            if args[4] == false then
+                return
+            end
+        end
+    end
+end
+
+--Shane buy lure here
+local function BuyLure()
+local args5 = {
+    [1] = {
+        [1] = {
+            ["kind"] = "lures_2023_normal_lure",
+            ["properties"] = {
+                ["cframe"] = CFrame.new(13.5, 0, -22.60009765625, 1, -3.82137093032941e-15, 8.742277657347586e-08, 3.82137093032941e-15, 1, 0, -8.742277657347586e-08, 0, 1)
+            }
+        }
+    }
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("HousingAPI/BuyFurnitures"):InvokeServer(unpack(args5))
+end
+
+
+local function repeatedlyInvokeLureFeed()
+    while true do
+        LureFeed()
+        wait(60) -- Waits for 90 seconds or 1.5 minutes
+    end
+end
+
+local function CallLure()
+    while true do
+        ActivateLure()
+        wait(60)
+    end
+end
+
+Fruits = {
+    "mango",
+    "pear",
+    "berry"
+}
+
+Locations = {
+    "1", "2", "3", "4", "5", "6", "7"
+}
+spawn(function()
+    while true and wait(60) do
+        for i, fruit in pairs(Fruits) do
+            for ia, location in pairs(Locations) do
+                game:GetService("ReplicatedStorage").API["FireDimensionAPI/PickFruit"]:InvokeServer(fruit, location)
+                print(fruit, location)
+            end
+        end
+    end
+end)
+
+spawn(function()
+    while true do
+        game:GetService("ReplicatedStorage").API["FireDimensionAPI/CookRecipe"]:InvokeServer("daily_recipe")
+        wait(60)
+    end
+end)
+
+spawn(BuyLure)
+spawn(CallLure)
+spawn(repeatedlyInvokeLureFeed)
