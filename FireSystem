@@ -77,7 +77,7 @@ repeat
         end
     end
 until game:GetService("Players").LocalPlayer.Character and workspace.Camera.CameraSubject == game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
-
+game.Players.LocalPlayer.PlayerGui.DialogApp.Enabled = false
 task.spawn(function()
     repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
     task.wait(4)
