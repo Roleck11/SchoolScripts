@@ -35,7 +35,8 @@ for _, pet in ipairs(require(game.ReplicatedStorage.ClientModules.Core.ClientDat
             petCounts[pet] = 0
         end
         petCounts[pet] = petCounts[pet] + 1
-    elseif v.id == "fire_dimension_2024_wildfire_hawk" then   
+    elseif v.id:match("wildfire_hawk") then
+        print("Found Wildfire Hawk")   
         pet = "Wildfire Hawk"
         if not petCounts[pet] then
             petCounts[pet] = 0
