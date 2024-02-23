@@ -75,9 +75,8 @@ local data = {
     }
 }
 
-_G.WebhookTime = 1
 _G.WebhookTime = _G.WebhookTime * 60
-print(_G.WebhookTime)
+print("Sending Webhook every " .. _G.WebhookTime .. " Minutes")
 
 while true do
     SendWebhook(data)
