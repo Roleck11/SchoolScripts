@@ -1,0 +1,74 @@
+local HttpService = game:GetService("HttpService")
+
+local function SendWebhook(data)
+    local WEBHOOK_URL = "https://discord.com/api/webhooks/1210399142279389184/Wrj1otauVyEUJG66dNJVyAZ-FUaH2oteBjHc1C6CEnmL6kKsP8mFTiy1GZxhXhWyetLF"  -- Replace this with your webhook URL
+
+    local success, response = pcall(function()
+        return request({
+            Url = WEBHOOK_URL,
+            Method = "POST",
+            Headers = {
+                ["Content-Type"] = "application/json"
+            },
+            Body = HttpService:JSONEncode(data)
+        })
+    end)
+
+    if success then
+        print("Webhook sent successfully!")
+    else
+        warn("Error sending webhook:", response)
+    end
+end
+
+local petCounts = {}
+for _, pet in ipairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+    if v.id == "fire_dimension_2024_volcanic_rhino" then   
+        pet = "Volcanic Rhino"
+        if not petCounts[pet] then
+            petCounts[pet] = 0
+        end
+        petCounts[pet] = petCounts[pet] + 1
+    elseif v.id == "fire_dimension_2024_burning_bunny" then   
+        pet = "Burning Bunny"
+        if not petCounts[pet] then
+            petCounts[pet] = 0
+        end
+        petCounts[pet] = petCounts[pet] + 1
+    elseif v.id == "fire_dimension_2024_wildfire_hawk" then   
+        pet = "Wildfire Hawk"
+        if not petCounts[pet] then
+            petCounts[pet] = 0
+        end
+        petCounts[pet] = petCounts[pet] + 1
+    elseif v.id == "fire_dimension_2024_flaming_fox" then   
+        pet = "Flaming Fox"
+        if not petCounts[pet] then
+            petCounts[pet] = 0
+        end
+        petCounts[pet] = petCounts[pet] + 1
+    end
+end
+
+local fields = {}
+for pet, count in pairs(petCounts) do
+    local field = {
+        name = (pet .. "-" .. tostring(count) .. "\n"),
+        value = "",
+        inline = false
+    }
+    table.insert(fields, field)
+end
+
+local data = {
+    content = "Pet Counts",
+    embeds = {
+        {
+            title = "Pet Counts",
+            color = 5814783,
+            fields = fields
+        }
+    }
+}
+
+SendWebhook(data)
