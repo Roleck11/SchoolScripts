@@ -1,11 +1,9 @@
 local HttpService = game:GetService("HttpService")
 
 local function SendWebhook(data)
-    local WEBHOOK_URL = "https://discord.com/api/webhooks/1210399142279389184/Wrj1otauVyEUJG66dNJVyAZ-FUaH2oteBjHc1C6CEnmL6kKsP8mFTiy1GZxhXhWyetLF"  -- Replace this with your webhook URL
-
     local success, response = pcall(function()
         return request({
-            Url = WEBHOOK_URL,
+            Url = _G.WebhookURL,
             Method = "POST",
             Headers = {
                 ["Content-Type"] = "application/json"
@@ -77,6 +75,7 @@ local data = {
     }
 }
 
+_G.WebhookTime = 1
 _G.WebhookTime = _G.WebhookTime * 60
 print(_G.WebhookTime)
 
