@@ -23,26 +23,26 @@ end
 
 local petCounts = {}
 for _, pet in ipairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
-    if v.id == "fire_dimension_2024_volcanic_rhino" then   
+    if pet.id == "fire_dimension_2024_volcanic_rhino" then   
         pet = "Volcanic Rhino"
         if not petCounts[pet] then
             petCounts[pet] = 0
         end
         petCounts[pet] = petCounts[pet] + 1
-    elseif v.id == "fire_dimension_2024_burning_bunny" then   
+    elseif pet.id == "fire_dimension_2024_burning_bunny" then   
         pet = "Burning Bunny"
         if not petCounts[pet] then
             petCounts[pet] = 0
         end
         petCounts[pet] = petCounts[pet] + 1
-    elseif v.id:match("wildfire_hawk") then
+    elseif pet.id == "fire_dimension_2024_wildfire_hawk" then
         print("Found Wildfire Hawk")   
         pet = "Wildfire Hawk"
         if not petCounts[pet] then
             petCounts[pet] = 0
         end
         petCounts[pet] = petCounts[pet] + 1
-    elseif v.id == "fire_dimension_2024_flaming_fox" then   
+    elseif pet.id == "fire_dimension_2024_flaming_fox" then   
         pet = "Flaming Fox"
         if not petCounts[pet] then
             petCounts[pet] = 0
