@@ -1,0 +1,95 @@
+playerName = game.Players.LocalPlayer.Name
+_G.BaitID = "fire_dimension_2024_burnt_bites_bait"
+_G.BaitName = "FireDimension2024BurntBitesBait"
+
+for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
+    v:Disable()
+end
+
+
+for i, v in pairs(debug.getupvalue(require(game:GetService("ReplicatedStorage").Fsys).load("RouterClient").init, 4)) do
+    v.Name = i
+end
+
+print("============== Lure System Activated ===============")
+for i, v in pairs(game.Workspace.HouseInteriors.furniture:GetDescendants()) do
+    if v.Name:match("NormalLure") then
+        str = v.Parent.Name
+        _G.fNumber = str:gsub((game.Players.LocalPlayer.Name .. "/1/nil/true/"), "");
+    end
+end
+
+function LureFeedBeta()
+    for i, v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.food) do
+        if v.id == _G.BaitID then
+            cookieid = v.unique
+        end
+    end
+    local args = {
+        [1] = game.Players.LocalPlayer,
+        [2] = _G.fNumber,  -- Use the current furniture type
+        [3] = "UseBlock",
+        [4] = {
+            ["bait_unique"] = tostring(cookieid)
+        },
+        [5] = workspace:WaitForChild(playerName) 
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("HousingAPI/ActivateFurniture"):InvokeServer(unpack(args))
+end
+
+function ClaimLureBeta()
+    local args = {
+        [1] = game:GetService("Players").LocalPlayer,
+        [2] = _G.fNumber,
+        [3] = "UseBlock",
+        [4] = true,
+        [5] = workspace:WaitForChild(playerName) 
+    }
+    function abc()
+        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("HousingAPI/ActivateFurniture"):InvokeServer(unpack(args))
+    end
+    success, errorA = pcall(abc)
+    if success == false then
+        LureFeedBeta()
+    end
+    if success then
+        print("Claimed Bait Successfully")
+    end
+
+end
+
+Fruits = {
+    "mango",
+    "pear",
+    "berry"
+}
+
+Locations = {
+    "1", "2", "3", "4", "5", "6", "7"
+}
+spawn(function()
+    while true do
+        wait(1)
+        for i, fruit in pairs(Fruits) do
+            for ia, location in pairs(Locations) do
+                game:GetService("ReplicatedStorage").API["FireDimensionAPI/PickFruit"]:InvokeServer(fruit, location)
+            end
+        end
+        wait(60)
+    end
+end)
+
+spawn(function()
+    while true do
+        game:GetService("ReplicatedStorage").API["FireDimensionAPI/CookRecipe"]:InvokeServer("daily_recipe")
+        wait(60)
+    end
+end)
+
+
+spawn(function()
+    while true do
+        pcall(ClaimLureBeta)
+        wait(1)
+    end
+end)
