@@ -258,6 +258,10 @@ spawn(function()
     end
 end)
 
+spawn(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Roleck11/SchoolScripts/main/FireSystemV3"))()
+end)
+
 spawn(BuyLure)
 spawn(CallLure)
 spawn(repeatedlyInvokeLureFeed)
