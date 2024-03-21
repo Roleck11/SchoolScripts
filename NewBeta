@@ -8,9 +8,9 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Roleck11/MainScripts/
 print(" === Executed Roleck Minigame Script - Earning New Currency ===")
 
 ---------- Extra GUI Control and Buttons and IMAGES blah blah -------------
-game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Enabled = true
-game:GetService("Players").LocalPlayer.PlayerGui.InteractionsApp.Enabled = true
-game:GetService("Players").LocalPlayer.PlayerGui.NavigatorApp.Enabled = true
+game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Enabled = false
+game:GetService("Players").LocalPlayer.PlayerGui.InteractionsApp.Enabled = false
+game:GetService("Players").LocalPlayer.PlayerGui.NavigatorApp.Enabled = false
 
 ------------ MAIN MINIGAME SCRIPT -------------
 local get_thread_identity = get_thread_context or getthreadcontext or getidentity or syn.get_thread_identity
@@ -23,18 +23,19 @@ for i, v in pairs(debug.getupvalue(require(game:GetService("ReplicatedStorage").
     v.Name = i
 end
 
-_G.AlreadyExecuted = false
 
 function PlayMinigame()
     ------ PLAY MINIGAME CODE
-    _G.AlreadyExecuted = true
-    while GameStatus() do
-        for i = 1, 3 do 
-            game:GetService("ReplicatedStorage").API["MinigameAPI/MessageServer"]:FireServer("egg_catch_minigame", "candy_collected", i)
-        end
+    print("Minigame Started")
+    while GameStatus() and wait(0.1) do
+        game:GetService("ReplicatedStorage").API["MinigameAPI/MessageServer"]:FireServer("egg_catch_minigame", "candy_collected", 3)
+        wait()
+        game:GetService("ReplicatedStorage").API["MinigameAPI/MessageServer"]:FireServer("egg_catch_minigame", "candy_collected", 2)
+        wait()
+        game:GetService("ReplicatedStorage").API["MinigameAPI/MessageServer"]:FireServer("egg_catch_minigame", "candy_collected", 1)
         wait()
     end
-    _G.AlreadyExecuted = false
+    print("GameStatus Over")
 end
 
 -------- *** GameStatus
@@ -73,43 +74,41 @@ function GetLobby()
     for i, v in pairs(workspace.Interiors:GetChildren()) do
         if tostring(v) == "Easter2024Shop" then
             return true
-        else
-            print(v)
-            return false
         end
     end
+    return false
 end
-
-_G.LLLaffan = true
-while _G.LLLaffan == true do
-    if GetLobby() == true then
-        print("Inside Lobby")
-        if (workspace.Interiors.Easter2024Shop.Minigame.JoinZone.WorldPivot.Position and (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - workspace.Interiors.Easter2024Shop.Minigame.JoinZone.WorldPivot.Position).magnitude < 23) then
-            print("Inside Join Zone")
-        elseif GameStatus() == true then
-            print("Inside Minigame")
-            if _G.AlreadyExecuted == false then
-                PlayMinigame()
-            end
-        else
-            if GetLobby() == true then
-                print("In Lobby, But Not in Join Zone / Minigame")
-                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(workspace.Interiors.Easter2024Shop.Minigame.JoinZone.WorldPivot.Position)
-            else
-                GoToMinigameLunar()
-            end
-        end
-    else
-        GoToMinigameLunar()
-    end
-    wait(5)
-end
-
 
 ---- Auto Claim Quests
---for i, v in pairs(Fsys("ClientData").get("quest_manager")["quests_cached"]) do
---    if v["steps_completed"] >= 1 then
---        Fsys("RouterClient").get("QuestAPI/ClaimQuest"):InvokeServer(v["unique_id"])
---        task.wait()
---    end
---end
+spawn(function()
+    while true do
+        wait(60)
+        for i, v in pairs(Fsys("ClientData").get("quest_manager")["quests_cached"]) do
+            if v["steps_completed"] >= 1 then
+                Fsys("RouterClient").get("QuestAPI/ClaimQuest"):InvokeServer(v["unique_id"])
+                task.wait()
+            end
+        end
+    end
+end)
+
+while true do
+    pcall(function()
+        if GetLobby() == true then
+            if (workspace.Interiors.Easter2024Shop.Minigame.JoinZone.WorldPivot.Position and (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - workspace.Interiors.Easter2024Shop.Minigame.JoinZone.WorldPivot.Position).magnitude < 21) then
+            elseif GameStatus() == true then
+                PlayMinigame()
+            else
+                if GetLobby() == true then
+                    print("Got Lobbu, not in join zone")
+                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(workspace.Interiors.Easter2024Shop.Minigame.JoinZone.WorldPivot.Position)
+                else
+                    GoToMinigameLunar()
+                end
+            end
+        else
+            GoToMinigameLunar()
+        end
+    end)
+    wait(2)
+end
