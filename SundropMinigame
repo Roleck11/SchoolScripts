@@ -11,72 +11,77 @@ local Location = nil
 local Player = game.Players.LocalPlayer
 
 for i, v in pairs(getgc()) do
-    if type(v) == "function" then
-        if getfenv(v).script == game.ReplicatedStorage.ClientModules.Core.InteriorsM.InteriorsM then
-            if table.find(getconstants(v), "LocationAPI/SetLocation") then
-                Location = v
-                break
-            end
-        end
-    end
+if type(v) == "function" then
+if getfenv(v).script == game.ReplicatedStorage.ClientModules.Core.InteriorsM.InteriorsM then
+if table.find(getconstants(v), "LocationAPI/SetLocation") then
+Location = v
+break
+end
+end
+end
 end
 local SetLocation = function(A, B, C)
-    local O = get_thread_identity()
-    set_thread_identity(2)
-    Location(A, B, C)
-    set_thread_identity(O)
+local O = get_thread_identity()
+set_thread_identity(2)
+Location(A, B, C)
+set_thread_identity(O)
 end
 function TeleportToMinigame()
-    SetLocation("Obbies", "MainDoor", {})
-    repeat task.wait() until workspace.Interiors:FindFirstChild("Obbies")
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Interiors.Obbies.Visual:GetChildren()[45].CFrame + Vector3.new(0, 6, 0)
+SetLocation("Obbies", "MainDoor", {})
+repeat task.wait() until workspace.Interiors:FindFirstChild("Obbies")
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Interiors.Obbies.Visual:GetChildren()[45].CFrame + Vector3.new(0, 6, 0)
 end
 
 -- MiniGame Code
 if not workspace.Interiors:FindFirstChild("Obbies") then
-    TeleportToMinigame()
+TeleportToMinigame()
 end
 
 game:GetService("ReplicatedStorage").API["EventAPI/CollectSunflowerDrops"]:InvokeServer(5000)
 
 while true and wait() do
-    startTime = tick()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Interiors.Obbies.Doors.Garden2024ChaseMap1.WorkingParts.TouchToEnter.CFrame
-    print("Teleporting to Game.")
-    repeat task.wait()
-        pcall(function()
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Interiors.Obbies.Doors.Garden2024ChaseMap1.WorkingParts.TouchToEnter.CFrame
-        firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, workspace.Interiors.Obbies.Doors.Garden2024ChaseMap1.WorkingParts.TouchToEnter, 0)
-        firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, workspace.Interiors.Obbies.Doors.Garden2024ChaseMap1.WorkingParts.TouchToEnter, 1)
-        task.wait(0.5) 
-        end)
-    until workspace.Interiors:FindFirstChild("Garden2024ChaseMap1")
-    repeat task.wait() until workspace.Interiors.Garden2024ChaseMap1.Programmed.SundropSpawns:FindFirstChild("Sundrop")
+startTime = tick()
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Interiors.Obbies.Doors.Garden2024ChaseMap1.WorkingParts.TouchToEnter.CFrame
+print("Teleporting to Game.")
+repeat task.wait()
+pcall(function()
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Interiors.Obbies.Doors.Garden2024ChaseMap1.WorkingParts.TouchToEnter.CFrame
+firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, workspace.Interiors.Obbies.Doors.Garden2024ChaseMap1.WorkingParts.TouchToEnter, 0)
+firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, workspace.Interiors.Obbies.Doors.Garden2024ChaseMap1.WorkingParts.TouchToEnter, 1)
+task.wait(0.5) 
+end)
+until workspace.Interiors:FindFirstChild("Garden2024ChaseMap1")
+repeat task.wait() until workspace.Interiors.Garden2024ChaseMap1.Programmed.SundropSpawns:FindFirstChild("Sundrop")
 
-    repeat wait() until game.Players.LocalPlayer.Character
-    repeat wait() until game.Players.LocalPlayer.Character.HumanoidRootPart
-    repeat wait() until game:GetService("Players").LocalPlayer.Character and workspace.Camera.CameraSubject == game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
-    
-    print("Entered Game.")
-    for i, v in pairs(workspace.Interiors.Garden2024ChaseMap1.Programmed.SundropSpawns:GetChildren()) do
-        if v.Name == "Sundrop" then
-            --OldVlaue = game:GetService("Players").LocalPlayer.PlayerGui.MinigameInGameApp.Body.Right.Container.ValueLabel.Text
-            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
-            task.wait(0.75)
-            --repeat task.wait() until OldVlaue ~= game:GetService("Players").LocalPlayer.PlayerGui.MinigameInGameApp.Body.Right.Container.ValueLabel.Text
-        end
-    end
-    print("Game Completed.")
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Interiors.Garden2024ChaseMap1.Programmed.BuffRemovers.Part.CFrame
-    repeat task.wait() until workspace.Interiors:FindFirstChild("Obbies")
+repeat wait() until game.Players.LocalPlayer.Character
+repeat wait() until game.Players.LocalPlayer.Character.HumanoidRootPart
+repeat wait() until game:GetService("Players").LocalPlayer.Character and workspace.Camera.CameraSubject == game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
 
-    repeat wait() until game.Players.LocalPlayer.Character
-    repeat wait() until game.Players.LocalPlayer.Character.HumanoidRootPart
-    repeat wait() until game:GetService("Players").LocalPlayer.Character and workspace.Camera.CameraSubject == game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
-    
-    game:GetService("ReplicatedStorage").API["EventAPI/CollectSunflowerDrops"]:InvokeServer(5000)
-    print("Sundrops Claimed.")
-    difTime = tick() - startTime
-    print("--- Took ".. tostring(difTime) .. " seconds! ---" )
-    print("--- Total: ".. tostring(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name]["garden_2024_hint_manager"]["sunflower_collected_sundrops"]) .. " Sundrops ---")
+print("Entered Game.")
+
+-- Start Obby
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Interiors.Garden2024ChaseMap1.Programmed.SpeedBlocks.Part.CFrame
+
+for i, v in pairs(workspace.Interiors.Garden2024ChaseMap1.Programmed.SundropSpawns:GetChildren()) do
+if v.Name == "Sundrop" then
+--OldVlaue = game:GetService("Players").LocalPlayer.PlayerGui.MinigameInGameApp.Body.Right.Container.ValueLabel.Text
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
+task.wait(0.75)
+--repeat task.wait() until OldVlaue ~= game:GetService("Players").LocalPlayer.PlayerGui.MinigameInGameApp.Body.Right.Container.ValueLabel.Text
+end
+end
+game:GetService("ReplicatedStorage").API["EventAPI/ClaimObbyReward"]:InvokeServer(1)
+print("Game Completed.")
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Interiors.Garden2024ChaseMap1.Programmed.BuffRemovers.Part.CFrame
+repeat task.wait() until workspace.Interiors:FindFirstChild("Obbies")
+
+repeat wait() until game.Players.LocalPlayer.Character
+repeat wait() until game.Players.LocalPlayer.Character.HumanoidRootPart
+repeat wait() until game:GetService("Players").LocalPlayer.Character and workspace.Camera.CameraSubject == game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
+
+game:GetService("ReplicatedStorage").API["EventAPI/CollectSunflowerDrops"]:InvokeServer(5000)
+print("Sundrops Claimed.")
+difTime = tick() - startTime
+print("--- Took ".. tostring(difTime) .. " seconds! ---" )
+print("--- Total: ".. tostring(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name]["garden_2024_hint_manager"]["sunflower_collected_sundrops"]) .. " Sundrops ---")
 end
