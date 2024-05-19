@@ -1,10 +1,10 @@
 
------ INTRO SCRIPT ----------
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Roleck11/MainScripts/main/AdoptMeIntroCheck"))()
+
+MapName = "Garden2024ChaseMap3"
 
 print("Executed Roleck Minigame Script")
 
--- TP CODE
 local get_thread_identity = get_thread_context or getthreadcontext or getidentity or syn.get_thread_identity
 local set_thread_identity = set_thread_context or setthreadcontext or setidentity or syn.set_thread_identity
 local Location = nil
@@ -26,62 +26,34 @@ set_thread_identity(2)
 Location(A, B, C)
 set_thread_identity(O)
 end
+
 function TeleportToMinigame()
-SetLocation("Obbies", "MainDoor", {})
-repeat task.wait() until workspace.Interiors:FindFirstChild("Obbies")
-game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Interiors.Obbies.Visual:GetChildren()[45].CFrame + Vector3.new(0, 6, 0)
+SetLocation(MapName, "MainDoor", {})
+repeat task.wait() until workspace.Interiors:FindFirstChild(MapName)
 end
-
--- MiniGame Code
-if not workspace.Interiors:FindFirstChild("Obbies") then
-TeleportToMinigame()
-end
-
-game:GetService("ReplicatedStorage").API["EventAPI/CollectSunflowerDrops"]:InvokeServer(5000)
 
 while true and wait() do
-startTime = tick()
-game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Interiors.Obbies.Doors.Garden2024ChaseMap1.WorkingParts.TouchToEnter.CFrame
-print("Teleporting to Game.")
-repeat task.wait()
-pcall(function()
-game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Interiors.Obbies.Doors.Garden2024ChaseMap1.WorkingParts.TouchToEnter.CFrame
-firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, workspace.Interiors.Obbies.Doors.Garden2024ChaseMap1.WorkingParts.TouchToEnter, 0)
-firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, workspace.Interiors.Obbies.Doors.Garden2024ChaseMap1.WorkingParts.TouchToEnter, 1)
-task.wait(0.5) 
-end)
-until workspace.Interiors:FindFirstChild("Garden2024ChaseMap1")
-repeat task.wait() until workspace.Interiors.Garden2024ChaseMap1.Programmed.SundropSpawns:FindFirstChild("Sundrop")
+TeleportToMinigame()
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Interiors:FindFirstChild(MapName).Programmed.SpeedBlocks.Part.CFrame
 
-repeat wait() until game.Players.LocalPlayer.Character
-repeat wait() until game.Players.LocalPlayer.Character.HumanoidRootPart
-repeat wait() until game:GetService("Players").LocalPlayer.Character and workspace.Camera.CameraSubject == game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
-
-print("Entered Game.")
-
--- Start Obby
-game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Interiors.Garden2024ChaseMap1.Programmed.SpeedBlocks.Part.CFrame
-
-for i, v in pairs(workspace.Interiors.Garden2024ChaseMap1.Programmed.SundropSpawns:GetChildren()) do
+for i, v in pairs(workspace.Interiors:FindFirstChild(MapName).Programmed.SundropSpawns:GetChildren()) do
 if v.Name == "Sundrop" then
 --OldVlaue = game:GetService("Players").LocalPlayer.PlayerGui.MinigameInGameApp.Body.Right.Container.ValueLabel.Text
 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
-task.wait(0.75)
+task.wait(0.5)
 --repeat task.wait() until OldVlaue ~= game:GetService("Players").LocalPlayer.PlayerGui.MinigameInGameApp.Body.Right.Container.ValueLabel.Text
 end
 end
-game:GetService("ReplicatedStorage").API["EventAPI/ClaimObbyReward"]:InvokeServer(1)
+
+game:GetService("ReplicatedStorage").API["EventAPI/ClaimObbyReward"]:InvokeServer(2)
+
 print("Game Completed.")
-game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Interiors.Garden2024ChaseMap1.Programmed.BuffRemovers.Part.CFrame
-repeat task.wait() until workspace.Interiors:FindFirstChild("Obbies")
-
-repeat wait() until game.Players.LocalPlayer.Character
-repeat wait() until game.Players.LocalPlayer.Character.HumanoidRootPart
-repeat wait() until game:GetService("Players").LocalPlayer.Character and workspace.Camera.CameraSubject == game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
-
 game:GetService("ReplicatedStorage").API["EventAPI/CollectSunflowerDrops"]:InvokeServer(5000)
-print("Sundrops Claimed.")
-difTime = tick() - startTime
-print("--- Took ".. tostring(difTime) .. " seconds! ---" )
-print("--- Total: ".. tostring(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name]["garden_2024_hint_manager"]["sunflower_collected_sundrops"]) .. " Sundrops ---")
+print(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name]["garden_2024_hint_manager"]["sunflower_collected_sundrops"])
+
+if tonumber(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name]["garden_2024_hint_manager"]["sunflower_collected_sundrops"]) >= 5000 then
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Interiors:FindFirstChild(MapName).Programmed.BuffRemovers.Part.CFrame
+repeat task.wait() until workspace.Interiors:FindFirstChild("Obbies")
+game:GetService("ReplicatedStorage").API["HousingAPI/ActivateInteriorFurniture"]:InvokeServer("f-1", "UseBlock", true, game.Players.LocalPlayer.Character)
+end
 end
