@@ -26,19 +26,17 @@ end
 
 function PlayMinigame()
     repeat task.wait() until workspace.Interiors:FindFirstChild("BullRideMinigame")
-    repeat task.wait() until workspace.Interiors.BullRideMinigame:FindFirstChild("Minigame") and workspace.Interiors.BullRideMinigame.Minigame:FindFirstChild("CowboyHat")
+    repeat task.wait() until workspace.Interiors.BullRideMinigame:FindFirstChild("Minigame") and workspace.Interiors.BullRideMinigame.Minigame:FindFirstChild("BullRideCowboyHat")
     game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
     task.wait(3)
-    -- Add Code to manage minigame..
 
     ------ PLAY MINIGAME CODE
     print("Minigame Started")
     while GameStatus() and wait(0.1) do
-        if workspace.Interiors.BullRideMinigame:FindFirstChild("Minigame") and workspace.Interiors.BullRideMinigame.Minigame:FindFirstChild("CowboyHat") then
-            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(workspace.Interiors.BullRideMinigame.Minigame.CowboyHat.WorldPivot.Position)
+        if workspace.Interiors.BullRideMinigame:FindFirstChild("Minigame") and workspace.Interiors.BullRideMinigame.Minigame:FindFirstChild("BullRideCowboyHat") then
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(workspace.Interiors.BullRideMinigame.Minigame.BullRideCowboyHat.WorldPivot.Position)
         end
     end
-
 
     repeat task.wait() until GameStatus()
     print("Game Status Over")
