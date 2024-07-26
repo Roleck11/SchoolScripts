@@ -1,0 +1,109 @@
+if not game:IsLoaded() then
+    while not game:IsLoaded() do wait(1) end
+end
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Roleck11/MainScripts/main/AdoptMeIntroCheck"))()
+
+HRP = game.Players.LocalPlayer.Character.HumanoidRootPart
+
+-- Disable GUIs
+game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Enabled = false
+game:GetService("Players").LocalPlayer.PlayerGui.InteractionsApp.Enabled = false
+game:GetService("Players").LocalPlayer.PlayerGui.NavigatorApp.Enabled = false
+
+-- Battlepass Claim
+task.spawn(function()
+    while task.wait(1) do
+        for i = 1, 40 do
+            game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("BattlePassAPI/ClaimReward"):InvokeServer("sunshine_games", i)
+            task.wait(1)
+        end
+        task.wait(60)
+    end
+end)
+
+---- Auto Claim Quests
+task.spawn(function()
+    while task.wait() do
+        for i, v in pairs(require(game.ReplicatedStorage:WaitForChild("Fsys")).load("ClientData").get("quest_manager")["quests_cached"]) do
+            if v["steps_completed"] >= 1 then
+                game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("QuestAPI/ClaimQuest"):InvokeServer(v["unique_id"])
+                task.wait()
+            end
+        end
+        task.wait(60)
+    end
+end)
+
+function getTokens()
+    for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.toys) do
+        if v.id == "sunshine_2024_sunshine_token" then
+            return true
+        end
+    end
+    return false
+end
+
+while task.wait(1) do
+    if getTokens() then
+        -- Create Lobby
+        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("MinigameAPI/LobbyCreate"):InvokeServer("sunshine")
+        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("MinigameAPI/LobbyStart"):FireServer()
+
+        repeat task.wait() until #(workspace.Interiors:GetChildren()) ~= 0
+        repeat task.wait(1) until (workspace.Interiors:GetChildren()[1]) and ((workspace.Interiors:GetChildren()[1]).Name):match("Sunshine")
+
+        -- Get Name
+        local ModelName = tostring(workspace.Interiors:FindFirstChildWhichIsA("Model"))
+        if not ModelName then
+            repeat
+                ModelName = tostring(workspace.Interiors:FindFirstChildWhichIsA("Model"))
+                task.wait(1)
+            until ModelName
+        end
+
+        getgenv().minigameName = ModelName
+        getgenv().minigameId = ModelName:match("::(.+)")
+
+        -- Earn Points in RockThrow
+        local args = {
+            [1] = "sunshine::" .. minigameId,
+            [2] = "activity_points_earned",
+            [3] = "RockThrow",
+            [4] = 100
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("MinigameAPI/MessageServer"):FireServer(unpack(args))
+
+        task.wait()
+        currentAct = "RockThrow"
+        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("MinigameAPI/MessageServer"):FireServer("sunshine::" .. minigameId, "activity_finished", currentAct)
+
+        -- Earn Points in Trampoline
+        local args = {
+            [1] = "sunshine::" .. minigameId,
+            [2] = "activity_points_earned",
+            [3] = "Trampoline",
+            [4] = 100
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("MinigameAPI/MessageServer"):FireServer(unpack(args))
+
+        task.wait()
+        currentAct = "Trampoline"
+        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("MinigameAPI/MessageServer"):FireServer("sunshine::" .. minigameId, "activity_finished", currentAct)
+
+        -- Earn Points in Tennis
+        local args = {
+            [1] = "sunshine::" .. minigameId,
+            [2] = "activity_points_earned",
+            [3] = "Tennis",
+            [4] = 100
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("MinigameAPI/MessageServer"):FireServer(unpack(args))
+
+        task.wait()
+        currentAct = "Tennis"
+        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("MinigameAPI/MessageServer"):FireServer("sunshine::" .. minigameId, "activity_finished", currentAct)
+
+        repeat task.wait() until #(workspace.Interiors:GetChildren()) ~= 0
+        repeat task.wait(1) until (workspace.Interiors:GetChildren()[1]) and (workspace.Interiors:GetChildren()[1]).Name ~= minigameName
+    end
+end
