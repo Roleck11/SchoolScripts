@@ -44,66 +44,70 @@ function getTokens()
 end
 
 while task.wait(1) do
-    if getTokens() then
-        -- Create Lobby
-        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("MinigameAPI/LobbyCreate"):InvokeServer("sunshine")
-        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("MinigameAPI/LobbyStart"):FireServer()
+    pcall(function()
+        if getTokens() then
+            -- Create Lobby
+            game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("MinigameAPI/LobbyCreate"):InvokeServer("sunshine")
+            game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("MinigameAPI/LobbyStart"):FireServer()
 
-        repeat task.wait() until #(workspace.Interiors:GetChildren()) ~= 0
-        repeat task.wait(1) until (workspace.Interiors:GetChildren()[1]) and ((workspace.Interiors:GetChildren()[1]).Name):match("Sunshine")
+            startTick = tick()
+            repeat task.wait() until #(workspace.Interiors:GetChildren()) ~= 0 or (tick() - startTick >= 5)
+            repeat task.wait(1) until (workspace.Interiors:GetChildren()[1]) and ((workspace.Interiors:GetChildren()[1]).Name):match("Sunshine") or (tick() - startTick >= 5)
 
-        -- Get Name
-        local ModelName = tostring(workspace.Interiors:FindFirstChildWhichIsA("Model"))
-        if not ModelName then
-            repeat
-                ModelName = tostring(workspace.Interiors:FindFirstChildWhichIsA("Model"))
-                task.wait(1)
-            until ModelName
+            -- Get Name
+            local ModelName = tostring(workspace.Interiors:FindFirstChildWhichIsA("Model"))
+            if not ModelName then
+                repeat
+                    ModelName = tostring(workspace.Interiors:FindFirstChildWhichIsA("Model"))
+                    task.wait(1)
+                until ModelName
+            end
+
+            getgenv().minigameName = ModelName
+            getgenv().minigameId = ModelName:match("::(.+)")
+
+            -- Earn Points in RockThrow
+            local args = {
+                [1] = "sunshine::" .. minigameId,
+                [2] = "activity_points_earned",
+                [3] = "RockThrow",
+                [4] = 100
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("MinigameAPI/MessageServer"):FireServer(unpack(args))
+
+            task.wait()
+            currentAct = "RockThrow"
+            game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("MinigameAPI/MessageServer"):FireServer("sunshine::" .. minigameId, "activity_finished", currentAct)
+
+            -- Earn Points in Trampoline
+            local args = {
+                [1] = "sunshine::" .. minigameId,
+                [2] = "activity_points_earned",
+                [3] = "Trampoline",
+                [4] = 100
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("MinigameAPI/MessageServer"):FireServer(unpack(args))
+
+            task.wait()
+            currentAct = "Trampoline"
+            game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("MinigameAPI/MessageServer"):FireServer("sunshine::" .. minigameId, "activity_finished", currentAct)
+
+            -- Earn Points in Tennis
+            local args = {
+                [1] = "sunshine::" .. minigameId,
+                [2] = "activity_points_earned",
+                [3] = "Tennis",
+                [4] = 100
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("MinigameAPI/MessageServer"):FireServer(unpack(args))
+
+            task.wait()
+            currentAct = "Tennis"
+            game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("MinigameAPI/MessageServer"):FireServer("sunshine::" .. minigameId, "activity_finished", currentAct)
+
+            startTick = tick()
+            repeat task.wait() until #(workspace.Interiors:GetChildren()) ~= 0 or (tick() - startTick >= 5)
+            repeat task.wait(1) until (workspace.Interiors:GetChildren()[1]) and (workspace.Interiors:GetChildren()[1]).Name ~= minigameName or (tick() - startTick >= 5)
         end
-
-        getgenv().minigameName = ModelName
-        getgenv().minigameId = ModelName:match("::(.+)")
-
-        -- Earn Points in RockThrow
-        local args = {
-            [1] = "sunshine::" .. minigameId,
-            [2] = "activity_points_earned",
-            [3] = "RockThrow",
-            [4] = 100
-        }
-        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("MinigameAPI/MessageServer"):FireServer(unpack(args))
-
-        task.wait()
-        currentAct = "RockThrow"
-        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("MinigameAPI/MessageServer"):FireServer("sunshine::" .. minigameId, "activity_finished", currentAct)
-
-        -- Earn Points in Trampoline
-        local args = {
-            [1] = "sunshine::" .. minigameId,
-            [2] = "activity_points_earned",
-            [3] = "Trampoline",
-            [4] = 100
-        }
-        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("MinigameAPI/MessageServer"):FireServer(unpack(args))
-
-        task.wait()
-        currentAct = "Trampoline"
-        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("MinigameAPI/MessageServer"):FireServer("sunshine::" .. minigameId, "activity_finished", currentAct)
-
-        -- Earn Points in Tennis
-        local args = {
-            [1] = "sunshine::" .. minigameId,
-            [2] = "activity_points_earned",
-            [3] = "Tennis",
-            [4] = 100
-        }
-        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("MinigameAPI/MessageServer"):FireServer(unpack(args))
-
-        task.wait()
-        currentAct = "Tennis"
-        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("MinigameAPI/MessageServer"):FireServer("sunshine::" .. minigameId, "activity_finished", currentAct)
-
-        repeat task.wait() until #(workspace.Interiors:GetChildren()) ~= 0
-        repeat task.wait(1) until (workspace.Interiors:GetChildren()[1]) and (workspace.Interiors:GetChildren()[1]).Name ~= minigameName
-    end
+    end)
 end
