@@ -459,6 +459,7 @@ function equip_complete_tasks(petType, questID, specificPet, numOfSteps)
             for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
                 if v.id ~= "practice_dog" and CheckPetRaritywID(v.id) == petType then
                     Equip(i)
+                    CurrentPetID = i
                     break
                 end
                 task.wait()
@@ -467,6 +468,7 @@ function equip_complete_tasks(petType, questID, specificPet, numOfSteps)
             for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
                 if v.id ~= "practice_dog" and not v.id:match("egg") then
                     Equip(i)
+                    CurrentPetID = i
                     break
                 end
             end
@@ -548,6 +550,7 @@ function equip_complete_tasks(petType, questID, specificPet, numOfSteps)
                     --game:GetService("ReplicatedStorage").API["AdoptAPI/MakeBabyJumpOutOfSeat"]:FireServer(Fsys("ClientData").get("pet_char_wrappers")[1]["char"])
                 end)
             end
+            Equip(CurrentPetID)
         end
     end)
     print(a,b)
