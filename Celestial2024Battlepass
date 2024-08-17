@@ -319,6 +319,17 @@ function findPetID(petName)
     return nil
 end
 
+function CheckEgg(PetID)
+    for _, entry in pairs(require(game:GetService("ReplicatedStorage").ClientDB.Inventory.InventoryDB).pets) do
+        if entry.id == PetID then
+            if entry.is_egg == true then
+                return true
+            end
+        end
+    end
+    return false
+end
+
 function CheckPetRaritywID(PetName)
     for _, entry in pairs(require(game:GetService("ReplicatedStorage").ClientDB.Inventory.InventoryDB).pets) do
         if type(entry) == "table" and string.lower(entry.id) == string.lower(PetName) then
@@ -339,7 +350,7 @@ end
 
 function ownPetByRarity(rarity)
     for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
-        if v.id ~= "practice_dog" and CheckPetRaritywID(v.id) == rarity then
+        if v.id ~= "practice_dog" and CheckPetRaritywID(v.id) == rarity and not CheckEgg(v.id) then
             return true
         end
         task.wait()
@@ -457,7 +468,7 @@ function equip_complete_tasks(petType, questID, specificPet, numOfSteps)
         print("Starting:", getQuestData(questID).entry_name)
         if specificPet then
             for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
-                if v.id ~= "practice_dog" and CheckPetRaritywID(v.id) == petType then
+                if v.id ~= "practice_dog" and CheckPetRaritywID(v.id) == petType and not CheckEgg(v.id) then
                     Equip(i)
                     CurrentPetID = i
                     break
@@ -466,7 +477,7 @@ function equip_complete_tasks(petType, questID, specificPet, numOfSteps)
             end
         else
             for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
-                if v.id ~= "practice_dog" and not v.id:match("egg") then
+                if v.id ~= "practice_dog" and not CheckEgg(v.id) then
                     Equip(i)
                     CurrentPetID = i
                     break
