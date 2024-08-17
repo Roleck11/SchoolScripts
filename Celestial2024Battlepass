@@ -582,6 +582,17 @@ task.spawn(function()
     end
 end)
 
+-- Battlepass Claims
+task.spawn(function()
+    while task.wait(1) do
+        for i = 1, 20 do
+            game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("BattlePassAPI/ClaimReward"):InvokeServer("celestial_2024_pass_1", i)
+            task.wait(1)
+        end
+        task.wait(30)
+    end
+end)
+
 while task.wait() do
     GalTaskData = getGalTasks()
     print("Quest1:", GalTaskData[1].entry_name)
