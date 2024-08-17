@@ -257,7 +257,7 @@ function CampingTask()
     print("Tping to Campsite Location")
     repeat task.wait() until workspace.Interiors:FindFirstChild("MainMap/Default") and workspace.Interiors["MainMap/Default"]:FindFirstChild("Static")
     task.wait(1)
-    while (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - Vector3.new(-25.9155788, 29.2977982, -1056.48621, -0.65591675, -2.36742768e-08, -0.754833221, 6.61726407e-09, 1, -3.7113697e-08, 0.754833221, -2.93384268e-08, -0.65591675)).Magnitude > 7 and task.wait() do
+    while (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - Vector3.new(-25.9155788, 29.2977982, -1056.48621, -0.65591675, -2.36742768e-08, -0.754833221, 6.61726407e-09, 1, -3.7113697e-08, 0.754833221, -2.93384268e-08, -0.65591675)).Magnitude > 7 and task.wait() or game.Players.LocalPlayer.PlayerGui.AilmentsMonitorApp.Ailments:FindFirstChild("camping") and task.wait() do
         Player.Character.HumanoidRootPart.CFrame = CFrame.new(-25.9155788, 29.2977982, -1056.48621, -0.65591675, -2.36742768e-08, -0.754833221, 6.61726407e-09, 1, -3.7113697e-08, 0.754833221, -2.93384268e-08, -0.65591675) + Vector3.new(0, 7, 0)
         task.wait(1)
     end
@@ -457,7 +457,7 @@ function equip_complete_tasks(petType, questID, specificPet, numOfSteps)
         print("Starting:", getQuestData(questID).entry_name)
         if specificPet then
             for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
-                if CheckPetRaritywID(v.id) == petType then
+                if v.id ~= "practice_dog" and CheckPetRaritywID(v.id) == petType then
                     Equip(i)
                     break
                 end
