@@ -679,7 +679,7 @@ while task.wait() do
             if not workspace.Interiors:FindFirstChild("Nursery") then
                 SetLocation("Nursery","MainDoor", {})
             end
-            repeat task.wait(1) until workspace.Interiors:FindFirstChild("Nursery")
+            repeat task.wait() until workspace.Interiors:FindFirstChild("Nursery")
             Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Landed)
             while (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - workspace.Interiors.Nursery.GardenSetDressing.Nursery:GetChildren()[65].CFrame.Position).Magnitude > 7 and task.wait() do
                 Player.Character.HumanoidRootPart.CFrame = workspace.Interiors.Nursery.GardenSetDressing.Nursery:GetChildren()[65].CFrame + Vector3.new(0, 7, 0)
