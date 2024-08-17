@@ -273,7 +273,7 @@ function BeachPartyTask()
         GoToMainMap()
     end
     Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Landed)
-    while (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - workspace.Interiors["MainMap/Default"].Static.Beach.BeachSetDressing.BoardWalk:GetChildren()[7].CFrame.Position).Magnitude > 7 and task.wait() do
+    while (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - workspace.Interiors["MainMap/Default"].Static.Beach.BeachSetDressing.BoardWalk:GetChildren()[7].CFrame.Position).Magnitude > 7 and task.wait() or game.Players.LocalPlayer.PlayerGui.AilmentsMonitorApp.Ailments:FindFirstChild("beach_party") do
         Player.Character.HumanoidRootPart.CFrame = workspace.Interiors["MainMap/Default"].Static.Beach.BeachSetDressing.BoardWalk:GetChildren()[7].CFrame + Vector3.new(0, 7, 0)
         task.wait(1)
     end
@@ -339,9 +339,10 @@ end
 
 function ownPetByRarity(rarity)
     for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
-        if not v.id:match("egg") and v.id ~= "practice_dog" and CheckPetRaritywID(v.id) == rarity then
+        if CheckPetRaritywID(v.id) == rarity then
             return true
         end
+        task.wait()
     end
     return false
 end
@@ -456,10 +457,11 @@ function equip_complete_tasks(petType, questID, specificPet, numOfSteps)
         print("Starting:", getQuestData(questID).entry_name)
         if specificPet then
             for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
-                if v.id ~= "practice_dog" and not v.id:match("egg") and CheckPetRaritywID(v.id) == petType then
+                if CheckPetRaritywID(v.id) == petType then
                     Equip(i)
                     break
                 end
+                task.wait()
             end
         else
             for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
@@ -606,7 +608,7 @@ while task.wait() do
                 fullGrowPet(findPetID("Cracked Egg"))
             end
             print("Completed: Hatch 3 Eggs - Medium Quest")
-        elseif GalTaskData[z].entry_name == "celestial_2024_small_age_potion_drank" then
+--[[        elseif GalTaskData[z].entry_name == "celestial_2024_small_age_potion_drank" then
             for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
                 if v.id ~= "practice_dog" and not v.id:match("egg") then
                     print(v.id)    
@@ -619,7 +621,7 @@ while task.wait() do
                     break
                 end
             end
-            print("Completed: Use Aging Potion - Small Quest")
+            print("Completed: Use Aging Potion - Small Quest")]]
         elseif GalTaskData[z].entry_name == "celestial_2024_medium_ailment_hungry_thirsty" then
             equip_complete_tasks("Common", GalTaskData[z].unique_id, false, 6)
             print("Completed: Complete 6 Hungry or Thirsty Tasks - Medium Quest")
@@ -662,10 +664,11 @@ while task.wait() do
         elseif GalTaskData[z].entry_name == "celestial_2024_large_ailments" then
             equip_complete_tasks("Legendary", GalTaskData[z].unique_id, false, 30)
             print("Completed: Complete 30 Tasks - Large Quest")
-        elseif GalTaskData[z].entry_name == "celestial_2024_large_buy_gumball_egg" and not _G.BoughtEgg then
+        elseif GalTaskData[z].entry_name == "celestial_2024_large_buy_gumball_egg" and (_G.BoughtEgg or 0) < 5 then
             if not workspace.Interiors:FindFirstChild("Nursery") then
                 SetLocation("Nursery","MainDoor", {})
             end
+            repeat task.wait(1) until workspace.Interiors:FindFirstChild("Nursery")
             Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Landed)
             while (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - workspace.Interiors.Nursery.GardenSetDressing.Nursery:GetChildren()[65].CFrame.Position).Magnitude > 7 and task.wait() do
                 Player.Character.HumanoidRootPart.CFrame = workspace.Interiors.Nursery.GardenSetDressing.Nursery:GetChildren()[65].CFrame + Vector3.new(0, 7, 0)
@@ -673,7 +676,7 @@ while task.wait() do
             end
             game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ShopAPI/BuyItem"):InvokeServer("pets", "garden_2024_egg", {})
             print("Completed: Buy an Egg from the Gumball Machine - Large Quest")
-            _G.BoughtEgg = true
+            _G.BoughtEgg = (_G.BoughtEgg or 0) + 1
         elseif GalTaskData[z].entry_name == "celestial_2024_small_open_gift" then
             game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ShopAPI/BuyItem"):InvokeServer("gifts", "smallgift", {})
             for i, v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.gifts) do
