@@ -590,6 +590,7 @@ task.spawn(function()
             task.wait(1)
         end
         task.wait(30)
+        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("BattlePassAPI/AttemptBattlePassReset"):InvokeServer("celestial_2024_pass_1")
     end
 end)
 
@@ -676,6 +677,7 @@ while task.wait() do
             equip_complete_tasks("Legendary", GalTaskData[z].unique_id, false, 30)
             print("Completed: Complete 30 Tasks - Large Quest")
         elseif GalTaskData[z].entry_name == "celestial_2024_large_buy_gumball_egg" and (_G.BoughtEgg or 0) < 5 then
+            pcall(function()
             if not workspace.Interiors:FindFirstChild("Nursery") then
                 SetLocation("Nursery","MainDoor", {})
             end
@@ -688,6 +690,7 @@ while task.wait() do
             game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ShopAPI/BuyItem"):InvokeServer("pets", "garden_2024_egg", {})
             print("Completed: Buy an Egg from the Gumball Machine - Large Quest")
             _G.BoughtEgg = (_G.BoughtEgg or 0) + 1
+            end)
         elseif GalTaskData[z].entry_name == "celestial_2024_small_open_gift" then
             game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ShopAPI/BuyItem"):InvokeServer("gifts", "smallgift", {})
             for i, v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.gifts) do
