@@ -339,7 +339,7 @@ end
 
 function ownPetByRarity(rarity)
     for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
-        if CheckPetRaritywID(v.id) == rarity then
+        if v.id ~= "practice_dog" and CheckPetRaritywID(v.id) == rarity then
             return true
         end
         task.wait()
