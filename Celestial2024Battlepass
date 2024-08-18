@@ -636,9 +636,9 @@ while task.wait() do
                 fullGrowPet(findPetID("Cracked Egg"))
             end
             print("Completed: Hatch 3 Eggs - Medium Quest")
---[[        elseif GalTaskData[z].entry_name == "celestial_2024_small_age_potion_drank" then
+        elseif GalTaskData[z].entry_name == "celestial_2024_small_age_potion_drank" and (_G.UsedPotion or 0) < 10 then
             for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
-                if v.id ~= "practice_dog" and not v.id:match("egg") then
+                if v.id ~= "practice_dog" and not v.id:match("egg") and v.properties.age < 6 then
                     print(v.id)    
                     Equip(i)
                     repeat task.wait(1) until Fsys("ClientData").get("pet_char_wrappers")[1] and Fsys("ClientData").get("pet_char_wrappers")[1].char
@@ -649,7 +649,8 @@ while task.wait() do
                     break
                 end
             end
-            print("Completed: Use Aging Potion - Small Quest")]]
+            print("Completed: Use Aging Potion - Small Quest")
+            _G.UsedPotion = (_G.UsedPotion or 0) + 1
         elseif GalTaskData[z].entry_name == "celestial_2024_medium_ailment_hungry_thirsty" then
             equip_complete_tasks("Common", GalTaskData[z].unique_id, false, 6)
             print("Completed: Complete 6 Hungry or Thirsty Tasks - Medium Quest")
@@ -692,7 +693,7 @@ while task.wait() do
         elseif GalTaskData[z].entry_name == "celestial_2024_large_ailments" then
             equip_complete_tasks("Legendary", GalTaskData[z].unique_id, false, 30)
             print("Completed: Complete 30 Tasks - Large Quest")
-        elseif GalTaskData[z].entry_name == "celestial_2024_large_buy_gumball_egg" and (_G.BoughtEgg or 0) < 5 then
+        elseif GalTaskData[z].entry_name == "celestial_2024_large_buy_gumball_egg" and (_G.BoughtEgg or 0) < 10 then
             pcall(function()
             if not workspace.Interiors:FindFirstChild("Nursery") then
                 SetLocation("Nursery","MainDoor", {})
