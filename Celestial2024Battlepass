@@ -636,7 +636,7 @@ while task.wait() do
                 fullGrowPet(findPetID("Cracked Egg"))
             end
             print("Completed: Hatch 3 Eggs - Medium Quest")
-        elseif GalTaskData[z].entry_name == "celestial_2024_small_age_potion_drank" and (_G.UsedPotion or 0) < 10 then
+        elseif GalTaskData[z].entry_name == "celestial_2024_small_age_potion_drank" and (_G.UsedPotion or 0) < 100 then
             for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
                 if v.id ~= "practice_dog" and not v.id:match("egg") and v.properties.age < 6 then
                     print(v.id)    
@@ -693,7 +693,7 @@ while task.wait() do
         elseif GalTaskData[z].entry_name == "celestial_2024_large_ailments" then
             equip_complete_tasks("Legendary", GalTaskData[z].unique_id, false, 30)
             print("Completed: Complete 30 Tasks - Large Quest")
-        elseif GalTaskData[z].entry_name == "celestial_2024_large_buy_gumball_egg" and (_G.BoughtEgg or 0) < 10 then
+        elseif GalTaskData[z].entry_name == "celestial_2024_large_buy_gumball_egg" and (_G.BoughtEgg or 0) < 100 then
             pcall(function()
             if not workspace.Interiors:FindFirstChild("Nursery") then
                 SetLocation("Nursery","MainDoor", {})
