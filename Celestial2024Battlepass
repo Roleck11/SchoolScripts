@@ -120,7 +120,7 @@ end
 local GoToMainMap = function()
     spawn(function()
         pcall(function()
-            SetLocation("MainMap", "Neighborhoodd/MainDoor", {})
+            SetLocation("MainMap", "Neighborhoodd/MainDoor", {["spawn_cframe"] = CFrame.new(-248.025375, 30.79702, -1746.41724, -0.998434782, -7.92188573e-08, -0.0559278913, -7.50130056e-08, 1, -7.73006334e-08, 0.0559278913, -7.29843208e-08, -0.998434782)})
         end)
     end)
     repeat task.wait(1) until game.workspace.Interiors:FindFirstChildWhichIsA("Model")  
