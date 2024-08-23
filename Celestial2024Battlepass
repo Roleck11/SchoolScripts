@@ -129,6 +129,15 @@ local GoToMainMap = function()
     return false
 end
 
+function GetMainMap()
+    local a = game.Workspace:FindFirstChild("Interiors"):FindFirstChild("center_map_plot", true)
+    if a then
+        return a.Parent.Parent.Name
+    else
+        return false
+    end
+end
+
 function EquipLastPet()
     game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Unequip"):InvokeServer(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].last_equipped_pets[1])
     game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Equip"):InvokeServer(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].last_equipped_pets[1])
@@ -251,13 +260,13 @@ end
 
 -- Camping Task
 function CampingTask()
-    if not workspace.Interiors:FindFirstChild("MainMap/Default") then
+    if not GetMainMap() then
         print("Tping to Main Map")
         GoToMainMap()
     end
     Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Landed)
     print("Tping to Campsite Location")
-    repeat task.wait() until workspace.Interiors:FindFirstChild("MainMap/Default") and workspace.Interiors["MainMap/Default"]:FindFirstChild("Static")
+    repeat task.wait() until GetMainMap() and workspace.Interiors[GetMainMap()]:FindFirstChild("Static")
     task.wait(1)
     while (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - Vector3.new(-25.9155788, 29.2977982, -1056.48621, -0.65591675, -2.36742768e-08, -0.754833221, 6.61726407e-09, 1, -3.7113697e-08, 0.754833221, -2.93384268e-08, -0.65591675)).Magnitude > 7 and task.wait() or game.Players.LocalPlayer.PlayerGui.AilmentsMonitorApp.Ailments:FindFirstChild("camping") and task.wait() do
         Player.Character.HumanoidRootPart.CFrame = CFrame.new(-25.9155788, 29.2977982, -1056.48621, -0.65591675, -2.36742768e-08, -0.754833221, 6.61726407e-09, 1, -3.7113697e-08, 0.754833221, -2.93384268e-08, -0.65591675) + Vector3.new(0, 7, 0)
@@ -271,12 +280,12 @@ end
 
 -- Beach Party Task
 function BeachPartyTask()
-    if not workspace.Interiors:FindFirstChild("MainMap/Default") then
+    if not GetMainMap() then
         GoToMainMap()
     end
     Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Landed)
-    while (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - workspace.Interiors["MainMap/Default"].Static.Beach.BeachSetDressing.BoardWalk:GetChildren()[7].CFrame.Position).Magnitude > 7 and task.wait() or game.Players.LocalPlayer.PlayerGui.AilmentsMonitorApp.Ailments:FindFirstChild("beach_party") do
-        Player.Character.HumanoidRootPart.CFrame = workspace.Interiors["MainMap/Default"].Static.Beach.BeachSetDressing.BoardWalk:GetChildren()[7].CFrame + Vector3.new(0, 7, 0)
+    while (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - workspace.Interiors[GetMainMap()].Static.Beach.BeachSetDressing.BoardWalk:GetChildren()[7].CFrame.Position).Magnitude > 7 and task.wait() or game.Players.LocalPlayer.PlayerGui.AilmentsMonitorApp.Ailments:FindFirstChild("beach_party") do
+        Player.Character.HumanoidRootPart.CFrame = workspace.Interiors[GetMainMap()].Static.Beach.BeachSetDressing.BoardWalk:GetChildren()[7].CFrame + Vector3.new(0, 7, 0)
         task.wait(1)
     end
     EquipLastPet()
