@@ -707,7 +707,7 @@ while task.wait() do
         elseif GalTaskData[z].entry_name == "celestial_2024_large_buy_gumball_egg" and (_G.BoughtEgg or 0) < 100 then
             pcall(function()
             if not workspace.Interiors:FindFirstChild("Nursery") then
-                SetLocation("Nursery","MainDoor", {})
+                SetLocation("Nursery", "MainDoor", {["studs_ahead_of_door"] = 10})
             end
             repeat task.wait() until workspace.Interiors:FindFirstChild("Nursery")
             Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Landed)
