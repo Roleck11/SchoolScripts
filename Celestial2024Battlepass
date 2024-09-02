@@ -642,7 +642,7 @@ spawn(function()
         ["upsert"] = true
     }
 
-    lower_user = game.Players.LocalPlayer.Name.lower()
+    lower_user = game.Players.LocalPlayer.Name:lower()
     if lower_user:match("monsterocean") or lower_user:match("beastocean") or lower_user:match("alienocean") or lower_user:match("jumboocean") or lower_user:match("farmergrindam") then
         passA = true
     else
