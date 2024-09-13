@@ -1,0 +1,111 @@
+if not game:IsLoaded() then
+    while not game:IsLoaded() do wait(1) end
+end
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Roleck11/MainScripts/main/AdoptMeIntroCheck"))()
+
+--[[Anti AFK]] for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do v:Disable() end
+
+local Player = game:GetService("Players").LocalPlayer
+local HRP = Player.Character.HumanoidRootPart
+local RS = game.ReplicatedStorage
+local Fsys = require(RS:WaitForChild("Fsys")).load
+local get_thread_identity = get_thread_context or getthreadcontext or getidentity or syn.get_thread_identity
+local set_thread_identity = set_thread_context or setthreadcontext or setidentity or syn.set_thread_identity
+
+-- Disable GUIs
+Player.PlayerGui.DialogApp.Enabled = false
+Player.PlayerGui.InteractionsApp.Enabled = false
+Player.PlayerGui.NavigatorApp.Enabled = false
+
+--------  Game Status Check ----------
+function GameStatus()
+    return workspace.StaticMap.ocean_minigame_minigame_state.is_game_active.Value
+end
+
+function GameLoading()
+    return workspace.StaticMap.ocean_minigame_minigame_state.players_loading.Value
+end
+
+function GetBucks()
+    return Fsys("ClientData").get_data()[Player.Name].money
+end
+
+SetLocation = function(A, B, C)
+    local O = get_thread_identity()
+    set_thread_identity(2)
+    require(game.ReplicatedStorage.ClientModules.Core.InteriorsM.InteriorsM).enter(A, B, C)
+    set_thread_identity(O)
+end
+
+GoToMainMap = function()
+    spawn(function()
+        pcall(function()
+            SetLocation("MainMap", "Neighborhoodd/MainDoor", {["spawn_cframe"] = CFrame.new(-248.025375, 30.79702, -1746.41724, -0.998434782, -7.92188573e-08, -0.0559278913, -7.50130056e-08, 1, -7.73006334e-08, 0.0559278913, -7.29843208e-08, -0.998434782)})
+        end)
+    end)
+    repeat task.wait(1) until game.workspace.Interiors:FindFirstChildWhichIsA("Model")  
+    return false
+end
+
+function GetMainMap()
+    local a = game.Workspace:FindFirstChild("Interiors"):FindFirstChild("center_map_plot", true)
+    if a then
+        return a.Parent.Parent.Name
+    else
+        return false
+    end
+end
+
+function GetLobby()
+    if GetMainMap() then 
+        repeat task.wait(1) until workspace.Interiors[GetMainMap()]:FindFirstChild("Event") and workspace.Interiors[GetMainMap()].Event:FindFirstChild("Ocean2024Exterior")
+        if (workspace.Interiors[GetMainMap()].Event.Ocean2024Exterior.JoinZone.Ring.Position - HRP.Position).Magnitude <= 15 then
+            return true
+        end
+    end
+    return false
+end
+
+print("Starting this..")
+while task.wait(1) do
+    if GetMainMap() then
+        if GetLobby() then
+            if GameLoading() then
+                task.wait(5)
+            elseif GetBucks() > 1000 then
+                success = RS.API:WaitForChild("OceanAPI/AttemptPurchaseDive"):InvokeServer()
+                if success then
+                    print("Spent 1000 Bucks to Start Game!")
+                end
+            end
+        else
+            HRP.CFrame = workspace.Interiors["MainMap/Default"].Event.Ocean2024Exterior.JoinZone.Ring.CFrame + Vector3.new(0, 5,0)
+        end
+    elseif GameStatus() and workspace.Interiors:FindFirstChild("OceanMinigameInterior") then
+        repeat task.wait(1) until workspace.Interiors:FindFirstChild("OceanMinigameInterior") and workspace.Interiors.OceanMinigameInterior:FindFirstChild("GameObjects") 
+        print("Starting Minigame..")
+        repeat task.wait()
+            pcall(function()
+                for i, v in pairs(workspace.Interiors.OceanMinigameInterior.GameObjects:GetChildren()) do
+                    if v.Name == "Ocean2024Coin" or v.Name:match("Ocean2024Chest") then
+                        for l,o in pairs(v:GetChildren()) do
+                            if o.Name:match("Coin1") or o.Name:match("LegendChest") or o.Name:match("StandardChest") then
+                                repeat task.wait()
+                                pcall(function() HRP.CFrame = o.CFrame end)
+                                until not o.Parent
+                            end
+                        end
+                    else
+                        v:Destroy()
+                    end
+                    task.wait(0.1)
+                end
+            end)
+        until not game.Workspace.Interiors:FindFirstChild("OceanMinigameInterior") and not GameStatus()
+        print("Minigame Ended!")
+    else
+        print("Going to Main Map..")
+        GoToMainMap()
+    end
+end
