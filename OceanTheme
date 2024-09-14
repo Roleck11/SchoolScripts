@@ -60,6 +60,8 @@ end
 function GetLobby()
     if GetMainMap() then 
         repeat task.wait(1) until workspace.Interiors[GetMainMap()]:FindFirstChild("Event") and workspace.Interiors[GetMainMap()].Event:FindFirstChild("Ocean2024Exterior")
+        repeat task.wait(1) until workspace.Interiors[GetMainMap()].Event.Ocean2024Exterior:FindFirstChild("JoinZone")
+        repeat task.wait(1) until workspace.Interiors[GetMainMap()].Event.Ocean2024Exterior.JoinZone:FindFirstChild("Ring")
         if (workspace.Interiors[GetMainMap()].Event.Ocean2024Exterior.JoinZone.Ring.Position - HRP.Position).Magnitude <= 15 then
             return true
         end
@@ -95,7 +97,6 @@ spawn(function()
             local isNeon = v.properties and v.properties.neon
             local isMega = v.properties and v.properties.mega_neon
             local petKey = isNeon and ("neon_" .. v.id) or isMega and ("mega_" .. v.id) or v.id
-            print(petKey)
             petsTable[petKey] = (petsTable[petKey] or 0) + 1
         end
 
