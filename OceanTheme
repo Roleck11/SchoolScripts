@@ -58,11 +58,12 @@ function GetMainMap()
 end
 
 function GetLobby()
-    if GetMainMap() then 
-        repeat task.wait(1) until workspace.Interiors[GetMainMap()]:FindFirstChild("Event") and workspace.Interiors[GetMainMap()].Event:FindFirstChild("Ocean2024Exterior")
-        repeat task.wait(1) until workspace.Interiors[GetMainMap()].Event.Ocean2024Exterior:FindFirstChild("JoinZone")
-        repeat task.wait(1) until workspace.Interiors[GetMainMap()].Event.Ocean2024Exterior.JoinZone:FindFirstChild("Ring")
-        if (workspace.Interiors[GetMainMap()].Event.Ocean2024Exterior.JoinZone.Ring.Position - HRP.Position).Magnitude <= 15 then
+    MapName = GetMainMap()
+    if MapName then 
+        repeat task.wait(1) until workspace.Interiors[MapName]:FindFirstChild("Event") and workspace.Interiors[MapName].Event:FindFirstChild("Ocean2024Exterior")
+        repeat task.wait(1) until workspace.Interiors[MapName].Event.Ocean2024Exterior:FindFirstChild("JoinZone")
+        repeat task.wait(1) until workspace.Interiors[MapName].Event.Ocean2024Exterior.JoinZone:FindFirstChild("Ring")
+        if (workspace.Interiors[MapName].Event.Ocean2024Exterior.JoinZone.Ring.Position - HRP.Position).Magnitude <= 15 then
             return true
         end
     end
