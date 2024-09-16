@@ -202,7 +202,9 @@ while task.wait(1) do
                 end
             end
         else
-            HRP.CFrame = workspace.Interiors["MainMap/Default"].Event.Ocean2024Exterior.JoinZone.Ring.CFrame + Vector3.new(0, 5,0)
+            pcall(function()
+                HRP.CFrame = workspace.Interiors[GetMainMap()].Event.Ocean2024Exterior.JoinZone.Ring.CFrame + Vector3.new(0, 5,0)
+            end)
         end
     elseif GameStatus() and workspace.Interiors:FindFirstChild("OceanMinigameInterior") then
         repeat task.wait(1) until workspace.Interiors:FindFirstChild("OceanMinigameInterior") and workspace.Interiors.OceanMinigameInterior:FindFirstChild("GameObjects") 
