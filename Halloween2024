@@ -1,0 +1,91 @@
+if not game:IsLoaded() then
+    while not game:IsLoaded() do wait(1) end
+end
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Roleck11/MainScripts/main/AdoptMeIntroCheck"))()
+
+--[[Anti AFK]] for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do v:Disable() end
+
+local Player = game:GetService("Players").LocalPlayer
+local HRP = Player.Character.HumanoidRootPart
+local RS = game.ReplicatedStorage
+local Fsys = require(RS:WaitForChild("Fsys")).load
+local get_thread_identity = get_thread_context or getthreadcontext or getidentity or syn.get_thread_identity
+local set_thread_identity = set_thread_context or setthreadcontext or setidentity or syn.set_thread_identity
+
+-- Disable GUIs
+Player.PlayerGui.DialogApp.Enabled = false
+Player.PlayerGui.InteractionsApp.Enabled = false
+Player.PlayerGui.NavigatorApp.Enabled = false
+
+--------  Game Status Check ----------
+function GameStatus()
+    return workspace.StaticMap["tile_skip_minigame_minigame_state"].is_game_active.Value
+end
+
+function GameLoading()
+    return workspace.StaticMap["tile_skip_minigame_minigame_state"].players_loading.Value
+end
+
+function GetBucks()
+    return Fsys("ClientData").get_data()[Player.Name].money
+end
+
+SetLocation = function(A, B, C)
+    local O = get_thread_identity()
+    set_thread_identity(2)
+    require(game.ReplicatedStorage.ClientModules.Core.InteriorsM.InteriorsM).enter(A, B, C)
+    set_thread_identity(O)
+end
+
+GoToMainMap = function()
+    spawn(function()
+        pcall(function()
+            SetLocation("Halloween2024Shop", "MainDoor", {["studs_ahead_of_door"] = 10})
+        end)
+    end)
+    repeat task.wait(1) until game.workspace.Interiors:FindFirstChildWhichIsA("Model")  
+    return false
+end
+
+function GetMainMap()
+    return workspace.Interiors:FindFirstChild("Halloween2024Shop")
+end
+
+function GetLobby()
+    repeat task.wait(1) until workspace.Interiors:FindFirstChild("Halloween2024Shop")
+    repeat task.wait(1) until workspace.Interiors["Halloween2024Shop"]:FindFirstChild("Event") and workspace.Interiors["Halloween2024Shop"]:FindFirstChild("TileSkip")
+    repeat task.wait(1) until workspace.Interiors["Halloween2024Shop"].TileSkip:FindFirstChild("JoinZone")
+    repeat task.wait(1) until workspace.Interiors["Halloween2024Shop"].TileSkip.JoinZone:FindFirstChild("Ring")
+    if (workspace.Interiors["Halloween2024Shop"].TileSkip.JoinZone.Ring.Position - HRP.Position).Magnitude <= 15 then
+        return true
+    end
+    return false
+end
+
+-- Database Code
+
+print("Starting this..")
+while task.wait(1) do
+    if GetMainMap() then
+        if GetLobby() then
+            if GameLoading() then
+                task.wait(5)
+            end
+        else
+            pcall(function()
+                HRP.CFrame = workspace.Interiors["Halloween2024Shop"].TileSkip.JoinZone.Ring.CFrame + Vector3.new(0, 5,0)
+            end)
+        end
+    elseif GameStatus() and workspace.Interiors:FindFirstChild("TileSkipMinigame") then
+        repeat task.wait(1) until workspace.Interiors:FindFirstChild("TileSkipMinigame") and workspace.Interiors.TileSkipMinigame:FindFirstChild("Minigame") 
+        print("Starting Minigame..")
+        repeat task.wait()
+            game:GetService("ReplicatedStorage").API:FindFirstChild("MinigameAPI/MessageServer"):FireServer("tile_skip_minigame", "reached_goal")
+        until not game.Workspace.Interiors:FindFirstChild("TileSkipMinigame") and not GameStatus()
+        print("Minigame Ended!")
+    else
+        print("Going to Main Map..")
+        GoToMainMap()
+    end
+end
