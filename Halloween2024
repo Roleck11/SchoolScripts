@@ -70,15 +70,13 @@ function GetMainMap()
 end
 
 function GetLobby()
-    pcall(function()
-    repeat task.wait(1) until workspace.Interiors:FindFirstChild("Halloween2024Shop")
-    repeat task.wait(1) until workspace.Interiors["Halloween2024Shop"]:FindFirstChild("TileSkip")
-    repeat task.wait(1) until workspace.Interiors["Halloween2024Shop"].TileSkip:FindFirstChild("JoinZone")
-    repeat task.wait(1) until workspace.Interiors["Halloween2024Shop"].TileSkip.JoinZone:FindFirstChild("Ring")
+    repeat task.wait() until workspace.Interiors:FindFirstChild("Halloween2024Shop")
+    repeat task.wait() until workspace.Interiors["Halloween2024Shop"]:FindFirstChild("TileSkip")
+    repeat task.wait() until workspace.Interiors["Halloween2024Shop"].TileSkip:FindFirstChild("JoinZone")
+    repeat task.wait() until workspace.Interiors["Halloween2024Shop"].TileSkip.JoinZone:FindFirstChild("Ring")
     if (workspace.Interiors["Halloween2024Shop"].TileSkip.JoinZone.Ring.Position - HRP.Position).Magnitude <= 15 then
         return true
     end
-    end)
     return false
 end
 
@@ -236,7 +234,8 @@ end)
 
 print("== Starting Auto Halloween 2024 Event ==")
 while task.wait(1) do
-    if GetAvailablePumpkins() then
+    if GetAvailablePumpkins() and not GameStatus() and not GameLoading() then
+        print("Getting Pumpkins..")
         SetLocation("MainMap", "Neighborhood/MainDoor")
         GetPumpkins()
         task.wait(1)
@@ -246,26 +245,34 @@ while task.wait(1) do
         SetLocation("Neighborhood", "MainDoor")
         GetPumpkins()
         task.wait(1)
+        print("Retrieved Pumpkins!!")
     end
     if GetMainMap() then
+        pcall(function()
         if GetLobby() then
             if GameLoading() then
                 task.wait(5)
             end
         else
+            print("TPing to Join Zone")
             pcall(function()
                 HRP.CFrame = workspace.Interiors["Halloween2024Shop"].TileSkip.JoinZone.Ring.CFrame + Vector3.new(0, 5,0)
             end)
         end
+        end)
     elseif GameStatus() and workspace.Interiors:FindFirstChild("TileSkipMinigame") then
+        print("Waiting for Minigame to load..")
         repeat task.wait(1) until workspace.Interiors:FindFirstChild("TileSkipMinigame") and workspace.Interiors.TileSkipMinigame:FindFirstChild("Minigame") 
         print("Starting Minigame..")
         for _, id in workspace:WaitForChild("Collectables"):GetChildren() do
             --if not id:IsA("Model") then continue end
             HRP.CFrame = CFrame.new(id.WorldPivot.Position)
             print("Getting:", id.Name)
-            repeat task.wait() until not id.Parent
+            startTime = os.time()
+            repeat task.wait() until not id.Parent or (os.time() - startTime >= 10)
+            if id.Parent then print("Failed to get Pumpkin") else print("Successfully got Pumpkin") end
         end
+        print("Completing minigame..")
         repeat task.wait()
             game:GetService("ReplicatedStorage").API:FindFirstChild("MinigameAPI/MessageServer"):FireServer("tile_skip_minigame", "reached_goal")
         until not game.Workspace.Interiors:FindFirstChild("TileSkipMinigame") and not GameStatus()
@@ -273,5 +280,6 @@ while task.wait(1) do
     else
         print("Going to Main Map..")
         GoToMainMap()
+        print("Arrived at Map..")
     end
 end
