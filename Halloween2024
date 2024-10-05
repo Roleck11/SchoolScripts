@@ -70,13 +70,15 @@ function GetMainMap()
 end
 
 function GetLobby()
+    pcall(function()
     repeat task.wait(1) until workspace.Interiors:FindFirstChild("Halloween2024Shop")
-    repeat task.wait(1) until workspace.Interiors["Halloween2024Shop"]:FindFirstChild("Event") and workspace.Interiors["Halloween2024Shop"]:FindFirstChild("TileSkip")
+    repeat task.wait(1) until workspace.Interiors["Halloween2024Shop"]:FindFirstChild("TileSkip")
     repeat task.wait(1) until workspace.Interiors["Halloween2024Shop"].TileSkip:FindFirstChild("JoinZone")
     repeat task.wait(1) until workspace.Interiors["Halloween2024Shop"].TileSkip.JoinZone:FindFirstChild("Ring")
     if (workspace.Interiors["Halloween2024Shop"].TileSkip.JoinZone.Ring.Position - HRP.Position).Magnitude <= 15 then
         return true
     end
+    end)
     return false
 end
 
