@@ -1,3 +1,4 @@
+
 if not game:IsLoaded() then
     while not game:IsLoaded() do wait(1) end
 end
@@ -27,21 +28,37 @@ function GameLoading()
     return workspace.StaticMap["tile_skip_minigame_minigame_state"].players_loading.Value
 end
 
-function GetBucks()
-    return Fsys("ClientData").get_data()[Player.Name].money
+function GetPumpkins()
+    for _, id in workspace.Collectables:GetChildren() do
+        --if not id:IsA("Model") then continue end
+        HRP.CFrame = CFrame.new(id.WorldPivot.Position)
+        print("Getting:", id.Name)
+        repeat task.wait() until not id.Parent
+    end 
 end
 
-SetLocation = function(A, B, C)
+function GetAvailablePumpkins()
+    ClientData = require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name]
+    avail = 0
+    for i,v in pairs(ClientData["halloween_2024_purple_pumpkins"]["available_pumpkins"]) do
+        if i ~= "TileSkipMinigame" then
+            avail += v
+        end
+    end
+    return avail ~= 0
+end
+
+SetLocation = function(A, B)
     local O = get_thread_identity()
     set_thread_identity(2)
-    require(game.ReplicatedStorage.ClientModules.Core.InteriorsM.InteriorsM).enter(A, B, C)
+    require(game.ReplicatedStorage.ClientModules.Core.InteriorsM.InteriorsM).enter(A, B, {["studs_ahead_of_door"] = 15})
     set_thread_identity(O)
 end
 
 GoToMainMap = function()
     spawn(function()
         pcall(function()
-            SetLocation("Halloween2024Shop", "MainDoor", {["studs_ahead_of_door"] = 10})
+            SetLocation("Halloween2024Shop", "MainDoor")
         end)
     end)
     repeat task.wait(1) until game.workspace.Interiors:FindFirstChildWhichIsA("Model")  
@@ -65,8 +82,51 @@ end
 
 -- Database Code
 
-print("Starting this..")
+-- Optimization
+workspace.Pets.ChildAdded:Connect(function(c)
+    task.wait(1)
+    for i, v in pairs(workspace.Pets:GetChildren()) do
+        v.Parent = game.ReplicatedStorage
+    end
+end)
+
+workspace.PlayerCharacters.ChildAdded:Connect(function(c)
+    task.wait(1)
+    for i, v in pairs(workspace.PlayerCharacters:GetChildren()) do
+        if v.Name ~= game.Players.LocalPlayer.Name then
+            v.Parent = game.ReplicatedStorage
+        end
+    end
+end)
+
+workspace.Interiors.ChildAdded:Connect(function(c)
+    task.wait(1)
+    if workspace.Interiors:FindFirstChild("Halloween2024Shop") then
+        for i,v in pairs(workspace.Interiors.Halloween2024Shop:GetChildren()) do
+            if v.Name == "Visual" then
+                for l,o in pairs(workspace.Interiors.Halloween2024Shop.Visual:GetChildren()) do
+                    if o.Name ~= "Tiles" then
+                        o.Parent = game.ReplicatedStorage
+                    end
+                end
+            end
+        end
+    end
+end)
+
+print("== Starting Auto Halloween 2024 Event ==")
 while task.wait(1) do
+    if GetAvailablePumpkins() then
+        SetLocation("MainMap", "Neighborhood/MainDoor")
+        GetPumpkins()
+        task.wait(1)
+        SetLocation("SkyCastle", "MainDoor")
+        GetPumpkins()
+        task.wait(1)
+        SetLocation("Neighborhood", "MainDoor")
+        GetPumpkins()
+        task.wait(1)
+    end
     if GetMainMap() then
         if GetLobby() then
             if GameLoading() then
@@ -80,6 +140,12 @@ while task.wait(1) do
     elseif GameStatus() and workspace.Interiors:FindFirstChild("TileSkipMinigame") then
         repeat task.wait(1) until workspace.Interiors:FindFirstChild("TileSkipMinigame") and workspace.Interiors.TileSkipMinigame:FindFirstChild("Minigame") 
         print("Starting Minigame..")
+        for _, id in workspace:WaitForChild("Collectables"):GetChildren() do
+            --if not id:IsA("Model") then continue end
+            HRP.CFrame = CFrame.new(id.WorldPivot.Position)
+            print("Getting:", id.Name)
+            repeat task.wait() until not id.Parent
+        end
         repeat task.wait()
             game:GetService("ReplicatedStorage").API:FindFirstChild("MinigameAPI/MessageServer"):FireServer("tile_skip_minigame", "reached_goal")
         until not game.Workspace.Interiors:FindFirstChild("TileSkipMinigame") and not GameStatus()
