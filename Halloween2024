@@ -11,6 +11,8 @@ local Player = game:GetService("Players").LocalPlayer
 local HRP = Player.Character.HumanoidRootPart
 local RS = game.ReplicatedStorage
 local Fsys = require(RS:WaitForChild("Fsys")).load
+local getconstants = getconstants or debug.getconstants
+local getgc = getgc or get_gc_objects or debug.getgc
 local get_thread_identity = get_thread_context or getthreadcontext or getidentity or syn.get_thread_identity
 local set_thread_identity = set_thread_context or setthreadcontext or setidentity or syn.set_thread_identity
 
@@ -48,10 +50,22 @@ function GetAvailablePumpkins()
     return avail ~= 0
 end
 
+local SetLocationTP
+for _, v in pairs(getgc()) do
+	if type(v) == "function" then
+		if getfenv(v).script == game.ReplicatedStorage.ClientModules.Core.InteriorsM.InteriorsM then
+			if table.find(getconstants(v), "LocationAPI/SetLocation") then
+				SetLocationTP = v
+				break
+			end
+		end
+	end
+end
+
 SetLocation = function(A, B)
     local O = get_thread_identity()
     set_thread_identity(2)
-    require(game.ReplicatedStorage.ClientModules.Core.InteriorsM.InteriorsM).enter(A, B, {["studs_ahead_of_door"] = 15})
+    SetLocationTP(A, B, {["studs_ahead_of_door"] = 15})
     set_thread_identity(O)
 end
 
@@ -236,15 +250,25 @@ print("== Starting Auto Halloween 2024 Event ==")
 while task.wait(1) do
     if GetAvailablePumpkins() and not GameStatus() and not GameLoading() then
         print("Getting Pumpkins..")
-        SetLocation("MainMap", "Neighborhood/MainDoor")
+        startTime = os.time()
+        spawn(function() pcall(function() SetLocation("MainMap", "Neighborhood/MainDoor") end) end)
+        repeat task.wait(1) until workspace.Interiors:FindFirstChildWhichIsA("Model") and workspace.Interiors:FindFirstChildWhichIsA("Model").Name:match("MainMap") or (os.time() - startTime >= 10)
+        print("arrived at mainmap")
         GetPumpkins()
         task.wait(1)
-        SetLocation("SkyCastle", "MainDoor")
+
+        startTime = os.time()
+        spawn(function() pcall(function() SetLocation("SkyCastle", "MainDoor") end) end)
+        repeat task.wait(1) until workspace.Interiors:FindFirstChild("SkyCastle") or (os.time() - startTime >= 10)
+        print("arrived at Skycastle")
         GetPumpkins()
         task.wait(1)
-        SetLocation("Neighborhood", "MainDoor")
+
+        startTime = os.time()
+        spawn(function() pcall(function() SetLocation("Neighborhood", "MainDoor") end) end)
+        repeat task.wait(1) until workspace.Interiors:FindFirstChildWhichIsA("Model") and workspace.Interiors:FindFirstChildWhichIsA("Model").Name:match("Neighborhood") or (os.time() - startTime >= 10)
+        print("arrived at negihour")
         GetPumpkins()
-        task.wait(1)
         print("Retrieved Pumpkins!!")
     end
     if GetMainMap() then
@@ -273,9 +297,10 @@ while task.wait(1) do
             if id.Parent then print("Failed to get Pumpkin") else print("Successfully got Pumpkin") end
         end
         print("Completing minigame..")
+        startTime = os.time()
         repeat task.wait()
             game:GetService("ReplicatedStorage").API:FindFirstChild("MinigameAPI/MessageServer"):FireServer("tile_skip_minigame", "reached_goal")
-        until not game.Workspace.Interiors:FindFirstChild("TileSkipMinigame") and not GameStatus()
+        until (not game.Workspace.Interiors:FindFirstChild("TileSkipMinigame") and not GameStatus()) or (os.time() - startTime >= 130)
         print("Minigame Ended!")
     else
         print("Going to Main Map..")
