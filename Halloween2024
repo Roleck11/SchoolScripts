@@ -65,7 +65,7 @@ end
 SetLocation = function(A, B)
     local O = get_thread_identity()
     set_thread_identity(2)
-    SetLocationTP(A, B, {["studs_ahead_of_door"] = 15})
+    require(game.ReplicatedStorage.ClientModules.Core.InteriorsM.InteriorsM).enter(A, B, {["studs_ahead_of_door"] = 15})
     set_thread_identity(O)
 end
 
