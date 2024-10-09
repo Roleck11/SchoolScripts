@@ -289,6 +289,7 @@ while task.wait(1) do
         print("Waiting for Minigame to load..")
         repeat task.wait(1) until workspace.Interiors:FindFirstChild("TileSkipMinigame") and workspace.Interiors.TileSkipMinigame:FindFirstChild("Minigame") 
         print("Starting Minigame..")
+        task.wait(10)
         for _, id in workspace:WaitForChild("Collectables"):GetChildren() do
             --if not id:IsA("Model") then continue end
             HRP.CFrame = CFrame.new(id.WorldPivot.Position)
@@ -297,6 +298,7 @@ while task.wait(1) do
             repeat task.wait() until not id.Parent or (os.time() - startTime >= 10)
             if id.Parent then print("Failed to get Pumpkin") else print("Successfully got Pumpkin") end
         end
+        task.wait(5)
         print("Completing minigame..")
         startTime = os.time()
         repeat task.wait()
