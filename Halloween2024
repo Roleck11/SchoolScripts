@@ -35,7 +35,9 @@ function GetPumpkins()
         --if not id:IsA("Model") then continue end
         HRP.CFrame = CFrame.new(id.WorldPivot.Position)
         print("Getting:", id.Name)
-        repeat task.wait() until not id.Parent
+        repeat task.wait(1) 
+            pcall(function() HRP.CFrame = CFrame.new(id.WorldPivot.Position) end)
+        until not id.Parent
     end 
 end
 
