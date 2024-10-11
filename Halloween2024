@@ -54,14 +54,16 @@ function GetAvailablePumpkins()
 end
 
 function GetGravestones()
-    graveyard_manager = ClientData.get_data()[game.Players.LocalPlayer.Name]["graveyard_manager"]
-    if os.time() > graveyard_manager["graveyard_opens_timestamp"] and os.time() < graveyard_manager["graveyard_closes_timestamp"] then
-        for index, bool in graveyard_manager.gravestones_pushed do
-            if bool then continue end
-            game.ReplicatedStorage.API["HalloweenAPI/PushGravestone"]:InvokeServer(index)
-            task.wait(1)
+    pcall(function()
+        graveyard_manager = ClientData.get_data()[game.Players.LocalPlayer.Name]["graveyard_manager"]
+        if os.time() > graveyard_manager["graveyard_opens_timestamp"] and os.time() < graveyard_manager["graveyard_closes_timestamp"] then
+            for index, bool in graveyard_manager.gravestones_pushed do
+                if bool then continue end
+                game.ReplicatedStorage.API["HalloweenAPI/PushGravestone"]:InvokeServer(index)
+                task.wait(1)
+            end
         end
-    end
+    end)
 end
 
 local SetLocationTP
