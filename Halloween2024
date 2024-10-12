@@ -55,7 +55,7 @@ end
 
 function FindPumpkinsIn(map)
     a,b = pcall(function()
-        ClientData.get_data()[game.Players.LocalPlayer.Name].halloween_2024_purple_pumpkins.available_pumpkins[map]
+        return ClientData.get_data()[game.Players.LocalPlayer.Name].halloween_2024_purple_pumpkins.available_pumpkins[map]
     end)
     if a then return b else return 0 end
 end
