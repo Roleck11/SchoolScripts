@@ -53,6 +53,13 @@ function GetAvailablePumpkins()
     return avail ~= 0
 end
 
+function FindPumpkinsIn(map)
+    a,b = pcall(function()
+        ClientData.get_data()[game.Players.LocalPlayer.Name].halloween_2024_purple_pumpkins.available_pumpkins[map]
+    end)
+    if a then return b else return 0 end
+end
+
 function GetGravestones()
     pcall(function()
         graveyard_manager = ClientData.get_data()[game.Players.LocalPlayer.Name]["graveyard_manager"]
@@ -268,7 +275,7 @@ while task.wait(1) do
     GetGravestones()
     if GetAvailablePumpkins() and not GameStatus() and not GameLoading() then
         print("Getting Pumpkins..")
-        if ClientData.get_data()[game.Players.LocalPlayer.Name].halloween_2024_purple_pumpkins.available_pumpkins.MainMap >= 1 then
+        if FindPumpkinsIn("MainMap") >= 1 then
             startTime = os.time()
             spawn(function() pcall(function() SetLocation("MainMap", "Neighborhood/MainDoor") end) end)
             repeat task.wait(1) until workspace.Interiors:FindFirstChildWhichIsA("Model") and workspace.Interiors:FindFirstChildWhichIsA("Model").Name:match("MainMap") or (os.time() - startTime >= 10)
@@ -278,7 +285,7 @@ while task.wait(1) do
             task.wait(1)
         end
 
-        if ClientData.get_data()[game.Players.LocalPlayer.Name].halloween_2024_purple_pumpkins.available_pumpkins.SkyCastle >= 1 then
+        if FindPumpkinsIn("SkyCastle") >= 1 then
             startTime = os.time()
             spawn(function() pcall(function() SetLocation("SkyCastle", "MainDoor") end) end)
             repeat task.wait(1) until workspace.Interiors:FindFirstChild("SkyCastle") or (os.time() - startTime >= 10)
@@ -288,7 +295,7 @@ while task.wait(1) do
             task.wait(1)
         end
 
-        if ClientData.get_data()[game.Players.LocalPlayer.Name].halloween_2024_purple_pumpkins.available_pumpkins.Neighborhood >= 1 then
+        if FindPumpkinsIn("Neighborhood") >= 1 then
             startTime = os.time()
             spawn(function() pcall(function() SetLocation("Neighborhood", "MainDoor") end) end)
             repeat task.wait(1) until workspace.Interiors:FindFirstChildWhichIsA("Model") and workspace.Interiors:FindFirstChildWhichIsA("Model").Name:match("Neighborhood") or (os.time() - startTime >= 10)
