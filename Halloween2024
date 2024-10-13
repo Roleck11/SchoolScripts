@@ -60,6 +60,14 @@ function FindPumpkinsIn(map)
     if a then return b else return 0 end
 end
 
+function BuyPumpkinFriend()
+    pcall(function()
+        if ClientData.get_data()[Player.Name].halloween_2024_purple_pumpkins.purple_pumpkins >= 150 then
+            game.ReplicatedStorage.API:FindFirstChild("HalloweenAPI/VendingMachinePurchase"):FireServer(1)
+        end
+    end)
+end
+
 function GetGravestones()
     pcall(function()
         graveyard_manager = ClientData.get_data()[game.Players.LocalPlayer.Name]["graveyard_manager"]
@@ -273,6 +281,7 @@ end)
 print("== Starting Auto Halloween 2024 Event ==")
 while task.wait(1) do
     GetGravestones()
+    BuyPumpkinFriend()
     if GetAvailablePumpkins() and not GameStatus() and not GameLoading() then
         print("Getting Pumpkins..")
         if FindPumpkinsIn("MainMap") >= 1 then
