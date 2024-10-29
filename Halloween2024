@@ -10,7 +10,6 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Roleck11/MainScripts/
 local Player = game:GetService("Players").LocalPlayer
 local HRP = Player.Character.HumanoidRootPart
 local RS = game.ReplicatedStorage
-local Fsys = require(RS:WaitForChild("Fsys")).load
 local getconstants = getconstants or debug.getconstants
 local getgc = getgc or get_gc_objects or debug.getgc
 local get_thread_identity = get_thread_context or getthreadcontext or getidentity or syn.get_thread_identity
