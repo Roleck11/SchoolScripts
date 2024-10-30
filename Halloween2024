@@ -1,11 +1,112 @@
+repeat task.wait() until game:IsLoaded() and game:GetService("ReplicatedStorage"):FindFirstChild("ClientModules") and game:GetService("ReplicatedStorage").ClientModules:FindFirstChild("Core") and game:GetService("ReplicatedStorage").ClientModules.Core:FindFirstChild("UIManager") and game:GetService("ReplicatedStorage").ClientModules.Core:FindFirstChild("UIManager").Apps:FindFirstChild("TransitionsApp") and game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("TransitionsApp") and game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("TransitionsApp"):FindFirstChild("Whiteout")
 
-if not game:IsLoaded() then
-    while not game:IsLoaded() do wait(1) end
+if game:GetService("Players").LocalPlayer.PlayerGui.TransitionsApp:FindFirstChild("Whiteout").Visible then 
+    game:GetService("Players").LocalPlayer.PlayerGui.TransitionsApp:FindFirstChild("Whiteout").Visible = false 
 end
 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Roleck11/MainScripts/main/AdoptMeIntroCheck"))()
+for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
+  v:Disable()
+end
+for i, v in pairs(debug.getupvalue(require(game:GetService("ReplicatedStorage").ClientModules.Core.RouterClient.RouterClient).init, 7)) do
+    v.Name = i 
+end
 
---[[Anti AFK]] for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do v:Disable() end
+local RS = game:GetService("ReplicatedStorage")
+local Main_Menu = require(RS.ClientModules.Core.UIManager.Apps.MainMenuApp)
+local Player = game:GetService("Players").LocalPlayer
+local VirtualInputManager = game:GetService("VirtualInputManager")
+
+---------------- Warn Control ---------------------------------
+local old;old = hookfunction(warn,function(data)
+   return
+end)
+---------------------------------------------------------------
+
+function clickGuiButton(button: Instance, xOffset: number, yOffset: number)
+	local xOffset = xOffset or 60
+	local yOffset = yOffset or 60
+	task.wait()
+	VirtualInputManager:SendMouseButtonEvent(button.AbsolutePosition.X + xOffset, button.AbsolutePosition.Y + yOffset, 0, true, game, 1)
+	task.wait()
+	VirtualInputManager:SendMouseButtonEvent(button.AbsolutePosition.X + xOffset, button.AbsolutePosition.Y + yOffset, 0, false, game, 1)
+	task.wait()
+end
+
+repeat
+    if Player.PlayerGui.NewsApp.EnclosingFrame.MainFrame.Contents.PlayButton.Visible then
+        clickGuiButton(Player.PlayerGui.NewsApp.EnclosingFrame.MainFrame.Contents.PlayButton)
+    end
+    if Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Baby.Visible then
+        clickGuiButton(Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Baby)
+    end
+    task.wait(1.1)
+    -- After Choose Parent
+    Player.PlayerGui.DialogApp.Dialog:WaitForChild("RobuxProductDialog")
+    if Player.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Visible then 
+        for i,v in pairs(Player.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Buttons:GetChildren()) do 
+            if v.ClassName == "ImageButton" then 
+                clickGuiButton(v)
+            end
+        end
+    end
+    Player.PlayerGui:WaitForChild("DailyLoginApp")
+    if Player.PlayerGui.DailyLoginApp.Enabled and Player.PlayerGui.DailyLoginApp.Frame.Visible then 
+        for i,v in pairs(Player.PlayerGui.DailyLoginApp.Frame.Body.Buttons:GetChildren()) do 
+            if v.Name == "ClaimButton" then
+                clickGuiButton(v)
+            end 
+        end
+    end
+    game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog:WaitForChild("UpdatesDialog")
+    if game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Visible then 
+        for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Buttons:GetChildren()) do 
+            if v.ClassName == "ImageButton" then 
+                clickGuiButton(v)
+            end
+        end
+    end
+until game:GetService("Players").LocalPlayer.Character and workspace.Camera.CameraSubject == game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
+
+task.spawn(function()
+    repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    task.wait(4)
+    game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog:WaitForChild("RobuxProductDialog")
+    if game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Visible then 
+        for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Buttons:GetChildren()) do 
+            if v.ClassName == "ImageButton" then 
+                clickGuiButton(v)
+            end
+        end
+    end
+    wait(0.5)
+    game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("DailyLoginApp")
+    if game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Enabled and game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Frame.Visible then 
+        for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Frame.Body.Buttons:GetChildren()) do 
+            if v.Name == "ClaimButton" then
+                clickGuiButton(v)
+                task.wait(0.5)
+                clickGuiButton(v)
+            end 
+        end
+    end
+    wait(0.5)
+    game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog:WaitForChild("UpdatesDialog")
+    if game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Visible then 
+        for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Buttons:GetChildren()) do 
+            if v.ClassName == "ImageButton" then 
+                clickGuiButton(v)
+            end
+        end
+    end
+end)
+
+------- Transition App Disabled (whatever it is) --------
+require(game.ReplicatedStorage.ClientModules.Core.UIManager.Apps.TransitionsApp).transition = function() return end 
+require(game.ReplicatedStorage.ClientModules.Core.UIManager.Apps.TransitionsApp).sudden_fill = function() return end
+if game:GetService("Players").LocalPlayer.PlayerGui.TransitionsApp:FindFirstChild("Whiteout").Visible then 
+    game:GetService("Players").LocalPlayer.PlayerGui.TransitionsApp:FindFirstChild("Whiteout").Visible = false 
+end
+
 
 local Player = game:GetService("Players").LocalPlayer
 local HRP = Player.Character.HumanoidRootPart
@@ -122,127 +223,6 @@ function GetLobby()
     end
     return false
 end
-
--- Database Code
-spawn(function()   
-    local function CheckPetRarity(PetName)
-        for _, entry in pairs(require(game:GetService("ReplicatedStorage").ClientDB.Inventory.InventoryDB).pets) do
-            if type(entry) == "table" and string.lower(entry.name) == string.lower(PetName) then
-                if entry.rarity == "common" then
-                    return "Common"
-                elseif entry.rarity == "uncommon" then 
-                    return "Uncommon"
-                elseif entry.rarity == "rare" then 
-                    return "Rare"
-                elseif entry.rarity == "ultra_rare" then 
-                    return "Ultra Rare"
-                elseif entry.rarity == "legendary" then 
-                    return "Legendary"
-                end
-            end
-        end
-    end
-
-    local function getInventoryInfo(tab)
-        local petsTable = {}
-        local allInventory = {}
-
-        for _, v in pairs(require(game.ReplicatedStorage:WaitForChild("Fsys", 600)).load("ClientData").get_data()[game.Players.LocalPlayer.Name].inventory[tab]) do
-            if v.id == "practice_dog" then continue end
-            local isNeon = v.properties and v.properties.neon
-            local isMega = v.properties and v.properties.mega_neon
-            local petKey = isNeon and ("neon_" .. v.id) or isMega and ("mega_" .. v.id) or v.id
-            petsTable[petKey] = (petsTable[petKey] or 0) + 1
-        end
-
-        for petKey, count in pairs(petsTable) do
-            local isNeon = petKey:sub(1,5) == "neon_"
-            local isMega = petKey:sub(1,5) == "mega_"
-            local petId = isNeon and petKey:sub(6) or isMega and petKey:sub(6) or petKey
-            local petInfo = nil
-    
-            for _, petData in pairs(require(game.ReplicatedStorage:WaitForChild("Fsys", 600)).load("InventoryDB")["pets"]) do
-                if petId == tostring(petData.id) then
-                    petInfo = petData
-                    break
-                end
-            end
-    
-            if petInfo then
-                local petName = isNeon and ("Neon " .. petInfo.name) or isMega and ("Mega " .. petInfo.name) or petInfo.name
-                local petRarity = CheckPetRarity(petInfo.name)
-                table.insert(allInventory, (count .. "x " .. petName) .. " - " .. petRarity)
-            end
-        end
-        local rarityOrder = {
-            ["Legendary"] = 1,
-            ["Ultra Rare"] = 2,
-            ["Rare"] = 3,
-            ["Uncommon"] = 4,
-            ["Common"] = 5
-        }
-    
-        table.sort(allInventory, function(a, b)
-            local aRarity = a:match("%- (.+)$")
-            local bRarity = b:match("%- (.+)$")
-            return (rarityOrder[aRarity] or 6) < (rarityOrder[bRarity] or 6)
-        end)
-        return allInventory
-    end
-
-    local headers = {
-        ["Content-Type"] = "application/json",
-        ["Access-Control-Request-Headers"] = "*",
-        ["api-key"] = "Gu2DvaZp4Fg1OU3NeyIx8AiUoVv1eiMTSEJh1u47G7UpD93RTlagBUrnks5VZAYm",
-    }
-    
-    local body = {
-        ["dataSource"] = "Cluster0",
-        ["database"] = "test",
-        ["collection"] = "idk",
-        ["filter"] = {},
-        ["update"] = {
-            ["$set"] = {
-                ["stats"] = {}
-            }
-        },
-        ["upsert"] = true
-    }
-
-    lower_user = game.Players.LocalPlayer.Name:lower()
-    if lower_user:match("monsterocean") or lower_user:match("beastocean") or lower_user:match("alienocean") or lower_user:match("jumboocean") or lower_user:match("farmergrindam") then
-        passA = true
-    else
-        passA = false
-    end
-
-    game:GetService("CoreGui"):WaitForChild("RobloxPromptGui", math.huge).promptOverlay.ChildAdded:Connect(function(Child)
-        if Child.Name ~= "ErrorPrompt" then
-            return
-        end
-        getgenv().Disconnected = true
-    end)
-
-    while passA and task.wait() and not getgenv().Disconnected do
-        pcall(function()
-            body["filter"]["username"] = game.Players.LocalPlayer.Name
-            body["update"]["$set"]["stats"]["aging_potion"] = tostring((function() local t={} for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.food)do if v.id=="pet_age_potion"then table.insert(t,i)end end return #t end)())
-            body["update"]["$set"]["stats"]["bucks"] = game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("BucksIndicatorApp").CurrencyIndicator.Container.Amount.Text
-            body["update"]["$set"]["stats"]["event_currency"] = (require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name][require(game:GetService("ReplicatedStorage").SharedModules.SharedDB.AltCurrencyData)["name"]] or 0)
-            body["update"]["$set"]["stats"]["purple_pumpkins"] = (require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name]["halloween_2024_purple_pumpkins"]["purple_pumpkins"] or 0)
-            body["update"]["$set"]["stats"]["pets"] = getInventoryInfo("pets")
-            body["update"]["$set"]["last_updated"] = os.date("!%Y-%m-%dT%H:%M:%SZ")
-
-            request({
-                Url = "https://us-east-2.aws.data.mongodb-api.com/app/data-ljriije/endpoint/data/v1/action/updateOne",
-                Method = "POST",
-                Headers = headers,
-                Body = game:GetService("HttpService"):JSONEncode(body)
-            })
-        end)
-        task.wait(300)
-    end
-end)
 
 -- Optimization
 workspace.Pets.ChildAdded:Connect(function(c)
