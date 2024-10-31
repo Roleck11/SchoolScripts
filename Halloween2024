@@ -306,6 +306,7 @@ while task.wait(1) do
             print("TPing to Join Zone")
             pcall(function()
                 HRP.CFrame = workspace.Interiors["Halloween2024Shop"].TileSkip.JoinZone.Ring.CFrame + Vector3.new(0, 5,0)
+                game.Players.LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Landed)
             end)
         end
         end)
