@@ -274,7 +274,7 @@ while task.wait(1) do
                 end
 
                 if GameLoading() then
-                    task.wait(5)
+                    task.wait(10)
                 end
             else
                 print("TPing to Join Zone")
