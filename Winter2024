@@ -238,7 +238,7 @@ workspace.Interiors.ChildAdded:Connect(function(c)
     task.wait(1)
     if workspace.Interiors:FindFirstChild("Winter2024Shop") then
         for i,v in pairs(workspace.Interiors.Winter2024Shop:GetChildren()) do
-            if v.Name == "Visual" or v.Name == "Holograms" or v.Name == "Mannequins" or v.Name == "ShopPedestals" then
+            if v.Name == "Visual" or v.Name == "Mannequins" or v.Name == "ShopPedestals" then
                 if v.Name == "Visual" then
                     for l,o in pairs(workspace.Interiors.Winter2024Shop.Visual:GetChildren()) do
                         if o.Name ~= "Model" then
@@ -321,19 +321,33 @@ while task.wait(0.5) do
 
         task.wait(1)
         print("Completing minigame..")
-        startTime = os.time()
+        local startTimeForMinigameOverCheck = os.time()
         repeat task.wait()
             -- Minigame Code
             if (Vector3.new(15766.4307, 7769.59521, 16022.4043) - HRP.Position).Magnitude > 15 then
                 HRP.Anchored = true
                 HRP.CFrame = CFrame.new(15766.4307, 7769.59521, 16022.4043) * CFrame.Angles(0, 0, 0)
                 CreateTempPart()
-                HRP.Anchored = false
+                --HRP.Anchored = false
             end
-        until (not game.Workspace.Interiors:FindFirstChild("SpleefMinigame") and not GameStatus()) or (os.time() - startTime >= 150)
+            local st = tick()
+            while tick() - st <= 60 do
+                task.wait(1)
+                if not (game.Workspace.Interiors:FindFirstChild("SpleefMinigame") and GameStatus() and Player.PlayerGui.MinigameInGameApp.Enabled) then
+                    startTimeForMinigameOverCheck = startTimeForMinigameOverCheck - 150
+                    break
+                end
+            end
+        until not (game.Workspace.Interiors:FindFirstChild("SpleefMinigame") and GameStatus() and Player.PlayerGui.MinigameInGameApp.Enabled) or (os.time() - startTimeForMinigameOverCheck >= 150)
         print("Minigame Ended!")
         HRP.Anchored = true
-        task.wait(10)
+        for i = 1, 10 do
+            task.wait(1)
+            pcall(function()
+                HRP.CFrame = CFrame.new(-15956, 11155, -15888) * CFrame.Angles(0, 0, 0)
+                CreateTempPart()
+            end)
+        end
     else
         print("Going to Main Map..")
         GoToMainMap()
