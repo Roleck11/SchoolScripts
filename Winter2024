@@ -157,14 +157,17 @@ end
 SetLocation = function(A, B)
     local O = get_thread_identity()
     set_thread_identity(4)
-    require(game.ReplicatedStorage.ClientModules.Core.InteriorsM.InteriorsM).enter(A, B, {["studs_ahead_of_door"] = 15})
+    --require(game.ReplicatedStorage.ClientModules.Core.InteriorsM.InteriorsM).enter(A, B, {["studs_ahead_of_door"] = 15})
+    require(game.ReplicatedStorage.ClientModules.Core.InteriorsM.InteriorsM).enter(A, B, {["spawn_cframe"] = CFrame.new(-15956, 11155, -15888) * CFrame.Angles(0, 0, 0)})
     set_thread_identity(O)
 end
 
 GoToMainMap = function()
+    local stA = tick()
     SetLocation("Winter2024Shop", "MainDoor")
     --if workspace:FindFirstChildWhichIsA("Terrain") then workspace.Terrain:Clear() end
-    repeat task.wait(1) until game.workspace.Interiors:FindFirstChildWhichIsA("Model") and game.workspace.Interiors:FindFirstChild("Winter2024Shop")
+    repeat task.wait(1) until (game.workspace.Interiors:FindFirstChildWhichIsA("Model") and game.workspace.Interiors:FindFirstChild("Winter2024Shop")) or (tick() - stA >= 200)
+    CreateTempPart()
     if workspace:FindFirstChildWhichIsA("Terrain") then workspace.Terrain:Clear() end
     return false
 end
@@ -184,7 +187,6 @@ function CreateTempPart()
         a.Name = "TempPartA"
         game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = a.CFrame + Vector3.new(0, 1, 0)
         Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Landed)
-        game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart").Anchored = false 
     end
 end
 
@@ -197,7 +199,8 @@ function GetLobby()
     repeat task.wait() until workspace.Interiors["Winter2024Shop"]:FindFirstChild("JoinZones")
     repeat task.wait() until workspace.Interiors["Winter2024Shop"].JoinZones:FindFirstChild("SpleefMinigame")
     repeat task.wait() until workspace.Interiors["Winter2024Shop"].JoinZones.SpleefMinigame:FindFirstChild("Ring")
-    if (workspace.Interiors["Winter2024Shop"].JoinZones.SpleefMinigame.Ring.Position - HRP.Position).Magnitude <= 15 then
+    local ringPos = workspace.Interiors["Winter2024Shop"].JoinZones.SpleefMinigame.Ring.Position
+    if ((ringPos - HRP.Position).Magnitude <= 15) or (ringPos.Y - HRP.Position.Y >= 0.50) then
         return true
     end
     return false
@@ -259,35 +262,50 @@ workspace.Interiors.ChildAdded:Connect(function(c)
     end
 end)
 
-local farmedG = false
+spawn(function()
+    while task.wait(5) do
+        pcall(function()
+            if not GameStatus() and Player.PlayerGui.MinigameInGameApp.Body.Left.Container.ValueLabel.Text == "00:00" and Player.PlayerGui.MinigameInGameApp.Enabled then
+                task.wait(15)
+                if not GameStatus() and Player.PlayerGui.MinigameInGameApp.Body.Left.Container.ValueLabel.Text == "00:00" and Player.PlayerGui.MinigameInGameApp.Enabled then
+                    game:Shutdown()
+                end
+            end
+        end)
+
+        if (ClientData.get_data()[game.Players.LocalPlayer.Name]["spleef_minigame_cycle_timestamp"]["timestamp"] - os.time() > 120) and (not GameLoading() and not GameStatus()) then
+            print("== Starting Farming Gingerbread ==")
+            farmGingerbreads()
+            print("== Ended Farming Gingerbread ==")
+            task.wait(300)
+        end
+    end
+end)
+
 
 print("== Starting Auto Winter 2024 Event ==")
-while task.wait(1) do
+while task.wait(0.5) do
     if GetMainMap() then
         pcall(function()
             if GetLobby() then
-                if (ClientData.get_data()[game.Players.LocalPlayer.Name]["spleef_minigame_cycle_timestamp"]["timestamp"] - os.time() > 150) and (not GameLoading()) and (not farmedG) then
-                    print("== Starting Farming Gingerbread ==")
-                    farmGingerbreads()
-                    print("== Ended Farming Gingerbread ==")
-                    farmedG = true
-                end
-
                 if GameLoading() then
+                    RS.API:FindFirstChild("MinigameAPI/AttemptJoin"):FireServer("spleef_minigame", true)
                     task.wait(10)
+                else
+                    pcall(function()
+                        HRP.CFrame = CFrame.new(-15956, 11155, -15888) * CFrame.Angles(0, 0, 0)
+                        CreateTempPart()
+                    end)
                 end
             else
                 print("TPing to Join Zone")
                 pcall(function()
                     HRP.Anchored = true
-                    HRP.CFrame = CFrame.new(-15956, 11151, -15888) * CFrame.Angles(0, 0, 0)
-                    Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Landed)
+                    HRP.CFrame = CFrame.new(-15956, 11155, -15888) * CFrame.Angles(0, 0, 0)
                     CreateTempPart()
-                    HRP.Anchored = true
-                    task.wait(1)
-                    Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Landed)
                     HRP.Anchored = false
                 end)
+                RS.API:FindFirstChild("MinigameAPI/AttemptJoin"):FireServer("spleef_minigame", true)
             end
         end)
     elseif GameStatus() and workspace.Interiors:FindFirstChild("SpleefMinigame") then
@@ -295,7 +313,7 @@ while task.wait(1) do
         repeat task.wait(0.50) until workspace.Interiors:FindFirstChild("SpleefMinigame") and workspace.Interiors.SpleefMinigame:FindFirstChild("Minigame") 
         print("Starting Minigame..")
         HRP.Anchored = true
-        task.wait(2)
+        task.wait(1)
 
         HRP.CFrame = CFrame.new(15766.4307, 7769.59521, 16022.4043) * CFrame.Angles(0, 0, 0)
         CreateTempPart()
@@ -313,8 +331,8 @@ while task.wait(1) do
             end
         until (not game.Workspace.Interiors:FindFirstChild("SpleefMinigame") and not GameStatus()) or (os.time() - startTime >= 150)
         print("Minigame Ended!")
+        HRP.Anchored = true
         task.wait(10)
-        farmedG = false
     else
         print("Going to Main Map..")
         GoToMainMap()
