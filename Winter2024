@@ -460,7 +460,7 @@ while task.wait(0.5) do
         HRP.Anchored = true
         task.wait(1)
 
-        HRP.CFrame = CFrame.new(-12026, 11795, -16005) * CFrame.Angles(0, 0, 0)
+        --HRP.CFrame = CFrame.new(-12026, 11795, -16005) * CFrame.Angles(0, 0, 0)
         CreateTempPart()
         HRP.Anchored = true
 
@@ -470,10 +470,10 @@ while task.wait(0.5) do
         --repeat task.wait()
             -- Minigame Code
             --if (Vector3.new(-12026, 11795, -16005) - HRP.Position).Magnitude > 15 then
-                HRP.Anchored = true
-                HRP.CFrame = CFrame.new(-12026, 11795, -16005) * CFrame.Angles(0, 0, 0)
-                CreateTempPart()
-                HRP.Anchored = true
+                --HRP.Anchored = true
+                --HRP.CFrame = CFrame.new(-12026, 11795, -16005) * CFrame.Angles(0, 0, 0)
+                --CreateTempPart()
+                --HRP.Anchored = true
             --end
 
             print("Waiting:", timeToSeconds(Player.PlayerGui.MinigameInGameApp.Body.Left.Container.ValueLabel.Text))
