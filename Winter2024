@@ -420,7 +420,7 @@ spawn(function()
             end
         end)
 
-        if (ClientData.get_data()[game.Players.LocalPlayer.Name]["spleef_minigame_cycle_timestamp"]["timestamp"] - os.time() > 120) and (not GameLoading() and not GameStatus()) then
+        if (not GameLoading() and not GameStatus()) then
             print("== Starting Farming Gingerbread ==")
             farmGingerbreads()
             print("== Ended Farming Gingerbread ==")
