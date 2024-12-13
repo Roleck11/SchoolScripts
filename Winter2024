@@ -14,6 +14,9 @@ local Main_Menu = require(RS.ClientModules.Core.UIManager.Apps.MainMenuApp)
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local LiveOpsMapSwap = require(game:GetService("ReplicatedStorage").SharedModules.Game.LiveOpsMapSwap)
 
+local MinigameClient = require(game:GetService("ReplicatedStorage").ClientModules.Game.MinigameHelpers.MinigameClient)
+local SpleefMinigameClient = require(game:GetService("ReplicatedStorage").SharedModules.ContentPacks.Winter2024.Minigames.SpleefMinigameClient)
+
 game.Players.LocalPlayer.Idled:Connect(function() 
     game:GetService("VirtualUser"):Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame) 
     task.wait(1)
@@ -158,7 +161,7 @@ SetLocation = function(A, B)
     local O = get_thread_identity()
     set_thread_identity(4)
     --require(game.ReplicatedStorage.ClientModules.Core.InteriorsM.InteriorsM).enter(A, B, {["studs_ahead_of_door"] = 15})
-    require(game.ReplicatedStorage.ClientModules.Core.InteriorsM.InteriorsM).enter(A, B, {["spawn_cframe"] = CFrame.new(-7956, 11160, -15888) * CFrame.Angles(0, 0, 0)})
+    require(game.ReplicatedStorage.ClientModules.Core.InteriorsM.InteriorsM).enter(A, B, {["spawn_cframe"] = CFrame.new(-3956, 11155, -15888) * CFrame.Angles(0, 0, 0)})
     set_thread_identity(O)
 end
 
@@ -340,6 +343,14 @@ function PlaceFloorAtSpleefMinigame()
     part.BrickColor = BrickColor.new("Bright red")
 end
 
+function reset_spleef_game()
+    local OrigThreadID = get_thread_identity()
+    task.wait()
+    set_thread_identity(2)
+    MinigameClient._exit_minigame_sequence(SpleefMinigameClient)
+    set_thread_identity(OrigThreadID)
+end
+
 -- Optimization
 workspace.Pets.ChildAdded:Connect(function(c)
     task.wait(1)
@@ -405,8 +416,9 @@ spawn(function()
             if not GameStatus() and Player.PlayerGui.MinigameInGameApp.Body.Left.Container.ValueLabel.Text == "00:00" and Player.PlayerGui.MinigameInGameApp.Enabled then
                 task.wait(15)
                 if not GameStatus() and Player.PlayerGui.MinigameInGameApp.Body.Left.Container.ValueLabel.Text == "00:00" and Player.PlayerGui.MinigameInGameApp.Enabled then
-                    --game:Shutdown()
-                    print("===== ACC STUCKK ====")
+                    print("===== ACC STUCKK ====, trying to reset")
+                    reset_spleef_game()
+                    task.wait(2)
                 end
             end
         end)
@@ -415,7 +427,7 @@ spawn(function()
             -- Winter Advent Manager Claim
             Winter2024AdventManager = ClientData.get_data()[game.Players.LocalPlayer.Name]["winter_2024_advent_manager"]
             if not Winter2024AdventManager["rewards_claimed"][#Winter2024AdventManager["replicated_rewards"]] then
-                RS.API:WaitForChild("WinterfestAPI/AdventCalendarTryTakeReward"):InvokeServer(i)
+                RS.API:WaitForChild("WinterEventAPI/AdventCalendarTryTakeReward"):InvokeServer(i)
                 print("Claimed", v["amount"], findItemName(v["kind"], v["category"]))
             end
         end)
@@ -439,14 +451,14 @@ while task.wait(0.5) do
                     RS.API:FindFirstChild("MinigameAPI/AttemptJoin"):FireServer("spleef_minigame", true)
                     task.wait(10)
                 else
-                    HRP.CFrame = CFrame.new(-7956, 11155, -15888) * CFrame.Angles(0, 0, 0)
+                    HRP.CFrame = CFrame.new(-3956, 11155, -15888) * CFrame.Angles(0, 0, 0)
                     CreateTempPart()
                 end
             else
                 print("TPing to Join Zone")
                 pcall(function()
                     HRP.Anchored = true
-                    HRP.CFrame = CFrame.new(-7956, 11155, -15888) * CFrame.Angles(0, 0, 0)
+                    HRP.CFrame = CFrame.new(-3956, 11155, -15888) * CFrame.Angles(0, 0, 0)
                     CreateTempPart()
                     HRP.Anchored = false
                 end)
@@ -460,7 +472,6 @@ while task.wait(0.5) do
         HRP.Anchored = true
         task.wait(1)
 
-        --HRP.CFrame = CFrame.new(-12026, 11795, -16005) * CFrame.Angles(0, 0, 0)
         CreateTempPart()
         HRP.Anchored = true
 
@@ -493,7 +504,7 @@ while task.wait(0.5) do
         HRP.Anchored = true
         for i = 1, 10 do
             task.wait(1)
-            HRP.CFrame = CFrame.new(-7956, 11155, -15888) * CFrame.Angles(0, 0, 0)
+            HRP.CFrame = CFrame.new(-3956, 11155, -15888) * CFrame.Angles(0, 0, 0)
             CreateTempPart()
         end
     else
