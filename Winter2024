@@ -129,6 +129,7 @@ DailyClaimConnection = Player.PlayerGui.DailyLoginApp:GetPropertyChangedSignal("
 	dailyLoginAppClick()
 end)
 
+--[[
 Player.PlayerGui.DialogApp.Dialog.NormalDialog:GetPropertyChangedSignal("Visible"):Connect(function()
     if Player.PlayerGui.DialogApp.Dialog.NormalDialog.Visible then
         Player.PlayerGui.DialogApp.Dialog.NormalDialog:WaitForChild("Info")
@@ -159,6 +160,7 @@ Player.PlayerGui.DialogApp.Dialog.NormalDialog:GetPropertyChangedSignal("Visible
         end)
     end
 end)
+]]
 
 repeat task.wait(1) until Player.PlayerGui.NewsApp.Enabled
 
@@ -182,7 +184,9 @@ end
 -- Load in house
 ReplicatedStorage:WaitForChild("API"):WaitForChild("HousingAPI/SetDoorLocked"):InvokeServer(true)
 repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+Player.PlayerGui.DialogApp.Enabled = false
 
+--[[
 if Player.PlayerGui.DialogApp.Dialog.NormalDialog.Info.TextLabel.Text:match("Thanks for subscribing!") then
 	FireButton("Okay")
 end
@@ -194,6 +198,7 @@ end
 if Player.PlayerGui.DialogApp.Dialog.NormalDialog.Info.TextLabel.Text:match("You have been awarded") then
 	FireButton("Awesome!")
 end
+]]
 
 dailyLoginAppClick()
 
