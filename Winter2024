@@ -1,10 +1,5 @@
 repeat task.wait() until game:IsLoaded() and game:GetService("ReplicatedStorage"):FindFirstChild("ClientModules") and game:GetService("ReplicatedStorage").ClientModules:FindFirstChild("Core") and game:GetService("ReplicatedStorage").ClientModules.Core:FindFirstChild("UIManager") and game:GetService("ReplicatedStorage").ClientModules.Core:FindFirstChild("UIManager").Apps:FindFirstChild("TransitionsApp") and game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("TransitionsApp") and game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("TransitionsApp"):FindFirstChild("Whiteout")
 
-if game:GetService("Players").LocalPlayer.PlayerGui.TransitionsApp:FindFirstChild("Whiteout").Visible then 
-    game:GetService("Players").LocalPlayer.PlayerGui.TransitionsApp:FindFirstChild("Whiteout").Visible = false 
-end
-
-
 local RS = game:GetService("ReplicatedStorage")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ClientData = require(RS.ClientModules.Core.ClientData)
@@ -12,10 +7,13 @@ local Player = game:GetService("Players").LocalPlayer
 local RouterClient = require(RS.ClientModules.Core:WaitForChild("RouterClient"):WaitForChild("RouterClient"))
 local Main_Menu = require(RS.ClientModules.Core.UIManager.Apps.MainMenuApp)
 local VirtualInputManager = game:GetService("VirtualInputManager")
-local LiveOpsMapSwap = require(game:GetService("ReplicatedStorage").SharedModules.Game.LiveOpsMapSwap)
+local LiveOpsMapSwap = require(RS.SharedModules.Game.LiveOpsMapSwap)
 
-local MinigameClient = require(game:GetService("ReplicatedStorage").ClientModules.Game.MinigameHelpers.MinigameClient)
-local SpleefMinigameClient = require(game:GetService("ReplicatedStorage").SharedModules.ContentPacks.Winter2024.Minigames.SpleefMinigameClient)
+local MinigameClient = require(RS.ClientModules.Game.MinigameHelpers.MinigameClient)
+local SpleefMinigameClient = require(RS.SharedModules.ContentPacks.Winter2024.Minigames.SpleefMinigameClient)
+local FrostclawsRevengeMinigameClient = require(RS.SharedModules.ContentPacks.Winter2024.Minigames.FrostclawsRevengeMinigameClient)
+
+local currentFarmGingerbread = false
 
 game.Players.LocalPlayer.Idled:Connect(function() 
     game:GetService("VirtualUser"):Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame) 
@@ -27,11 +25,28 @@ for i, v in pairs(debug.getupvalue(RouterClient.init, 7)) do
     v.Name = i
 end
 
----------------------------------------------------------------
+-- Press Button Functions
+function FireButton(PassOn, dialogFramePass)
+	task.wait()
+	local dialogFrame = dialogFramePass or "NormalDialog"
+	for i, v in pairs(Player.PlayerGui.DialogApp.Dialog[dialogFrame].Buttons:GetDescendants()) do
+		if v.Name == "TextLabel" then
+			if v.Text == PassOn then
+                task.wait(2)
+                firesignal(v.Parent.Parent.MouseButton1Down)
+                firesignal(v.Parent.Parent.MouseButton1Click)
+                firesignal(v.Parent.Parent.MouseButton1Up)
+				break
+			end
+		end
+	end
+end
 
 function clickGuiButton(button: Instance, xOffset: number, yOffset: number)
+    if typeof(button) ~= "Instance" then print("button is not a Instance") return end
 	local xOffset = xOffset or 60
 	local yOffset = yOffset or 60
+
 	task.wait()
 	VirtualInputManager:SendMouseButtonEvent(button.AbsolutePosition.X + xOffset, button.AbsolutePosition.Y + yOffset, 0, true, game, 1)
 	task.wait()
@@ -39,141 +54,298 @@ function clickGuiButton(button: Instance, xOffset: number, yOffset: number)
 	task.wait()
 end
 
-repeat
-    if Player.PlayerGui.NewsApp.EnclosingFrame.MainFrame.Contents.PlayButton.Visible then
-        clickGuiButton(Player.PlayerGui.NewsApp.EnclosingFrame.MainFrame.Contents.PlayButton)
-    end
-    if Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Baby.Visible then
-        clickGuiButton(Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Baby)
-    end
-    task.wait(1.1)
-    -- After Choose Parent
-    Player.PlayerGui.DialogApp.Dialog:WaitForChild("RobuxProductDialog")
-    if Player.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Visible then 
-        for i,v in pairs(Player.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Buttons:GetChildren()) do 
-            if v.ClassName == "ImageButton" then 
-                clickGuiButton(v)
-            end
-        end
-    end
-    Player.PlayerGui:WaitForChild("DailyLoginApp")
-    if Player.PlayerGui.DailyLoginApp.Enabled and Player.PlayerGui.DailyLoginApp.Frame.Visible then 
-        for i,v in pairs(Player.PlayerGui.DailyLoginApp.Frame.Body.Buttons:GetChildren()) do 
-            if v.Name == "ClaimButton" then
-                clickGuiButton(v)
-            end 
-        end
-    end
-    game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog:WaitForChild("UpdatesDialog")
-    if game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Visible then 
-        for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Buttons:GetChildren()) do 
-            if v.ClassName == "ImageButton" then 
-                clickGuiButton(v)
-            end
-        end
-    end
-until game:GetService("Players").LocalPlayer.Character and workspace.Camera.CameraSubject == game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
-
-task.spawn(function()
-    repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-    task.wait(4)
-    game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog:WaitForChild("RobuxProductDialog")
-    if game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Visible then 
-        for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Buttons:GetChildren()) do 
-            if v.ClassName == "ImageButton" then 
-                clickGuiButton(v)
-            end
-        end
-    end
-    wait(0.5)
-    game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("DailyLoginApp")
-    if game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Enabled and game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Frame.Visible then 
-        for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Frame.Body.Buttons:GetChildren()) do 
-            if v.Name == "ClaimButton" then
-                clickGuiButton(v)
-                task.wait(0.5)
-                clickGuiButton(v)
-            end 
-        end
-    end
-    wait(0.5)
-    game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog:WaitForChild("UpdatesDialog")
-    if game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Visible then 
-        for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Buttons:GetChildren()) do 
-            if v.ClassName == "ImageButton" then 
-                clickGuiButton(v)
-            end
-        end
-    end
-end)
-
----------- Extra GUI Control and Buttons and IMAGES blah blah -------------
-game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Enabled = false
-game:GetService("Players").LocalPlayer.PlayerGui.InteractionsApp.Enabled = false
-game:GetService("Players").LocalPlayer.PlayerGui.NavigatorApp.Enabled = false
-
-------- Transition App Disabled (whatever it is) --------
-require(game.ReplicatedStorage.ClientModules.Core.UIManager.Apps.TransitionsApp).transition = function() return end 
-require(game.ReplicatedStorage.ClientModules.Core.UIManager.Apps.TransitionsApp).sudden_fill = function() return end
-if game:GetService("Players").LocalPlayer.PlayerGui.TransitionsApp:FindFirstChild("Whiteout").Visible then 
-    game:GetService("Players").LocalPlayer.PlayerGui.TransitionsApp:FindFirstChild("Whiteout").Visible = false 
-end
-
-
-local Player = game:GetService("Players").LocalPlayer
-local HRP = Player.Character.HumanoidRootPart
-local RS = game.ReplicatedStorage
-local getconstants = getconstants or debug.getconstants
-local getgc = getgc or get_gc_objects or debug.getgc
-local get_thread_identity = get_thread_context or getthreadcontext or getidentity or syn.get_thread_identity
-local set_thread_identity = set_thread_context or setthreadcontext or setidentity or syn.set_thread_identity
-
--- Disable GUIs
-Player.PlayerGui.DialogApp.Enabled = false
-Player.PlayerGui.InteractionsApp.Enabled = false
-Player.PlayerGui.NavigatorApp.Enabled = false
-
--- Database Tracker
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Roleck11/ServerCode/main/sendDatabaseReq"))()
-
---------  Game Status Check ----------
-function GameStatus()
-    return workspace.StaticMap["spleef_minigame_minigame_state"].is_game_active.Value
-end
-
-function GameLoading()
-    return workspace.StaticMap["spleef_minigame_minigame_state"].players_loading.Value
-end
-
-local SetLocationTP
-for _, v in pairs(getgc()) do
-	if type(v) == "function" then
-		if getfenv(v).script == game.ReplicatedStorage.ClientModules.Core.InteriorsM.InteriorsM then
-			if table.find(getconstants(v), "LocationAPI/SetLocation") then
-				SetLocationTP = v
-				break
+-- Daily Rewards Func
+local function dailyLoginAppClick()
+	if not Player.PlayerGui.DailyLoginApp.Enabled then return end
+	Player.PlayerGui.DailyLoginApp:WaitForChild("Frame")
+	Player.PlayerGui.DailyLoginApp.Frame:WaitForChild("Body")
+	Player.PlayerGui.DailyLoginApp.Frame.Body:WaitForChild("Buttons")
+	for _, v in Player.PlayerGui.DailyLoginApp.Frame.Body.Buttons:GetDescendants() do
+		if v.Name == "TextLabel" then
+			if v.Text == "CLOSE" then
+				clickGuiButton(v.Parent.Parent)
+				task.wait(1)
+			elseif v.Text == "CLAIM!" then
+				firesignal(v.Parent.Parent.MouseButton1Down)
+				firesignal(v.Parent.Parent.MouseButton1Click)
+				firesignal(v.Parent.Parent.MouseButton1Up)
+				task.wait(.2)
+				firesignal(v.Parent.Parent.MouseButton1Down)
+				firesignal(v.Parent.Parent.MouseButton1Click)
+				firesignal(v.Parent.Parent.MouseButton1Up)
 			end
 		end
 	end
 end
 
-SetLocation = function(A, B)
-    local O = get_thread_identity()
-    set_thread_identity(4)
-    --require(game.ReplicatedStorage.ClientModules.Core.InteriorsM.InteriorsM).enter(A, B, {["studs_ahead_of_door"] = 15})
-    require(game.ReplicatedStorage.ClientModules.Core.InteriorsM.InteriorsM).enter(A, B, {["spawn_cframe"] = CFrame.new(-3956, 11155, -15888) * CFrame.Angles(0, 0, 0)})
-    set_thread_identity(O)
+-- Dismiss Popups
+RoleChooserDialogConnection = Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog:GetPropertyChangedSignal("Visible"):Connect(function()
+	task.wait()
+	if Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Visible then
+		firesignal(Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Baby.MouseButton1Down)
+		firesignal(Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Baby.MouseButton1Click)
+		firesignal(Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Baby.MouseButton1Up)
+		RoleChooserDialogConnection:Disconnect()
+	end
+end)
+
+RobuxProductDialogConnection1 = Player.PlayerGui.DialogApp.Dialog.RobuxProductDialog:GetPropertyChangedSignal("Visible"):Connect(function()
+	if not Player.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Visible then return end
+	Player.PlayerGui.DialogApp.Dialog.RobuxProductDialog:WaitForChild("Buttons")
+	task.wait()
+	for _, v in Player.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Buttons:GetDescendants() do
+		if v.Name == "TextLabel" then
+			if v.Text == "No Thanks" then
+				firesignal(v.Parent.Parent.MouseButton1Down)
+				firesignal(v.Parent.Parent.MouseButton1Click)
+				firesignal(v.Parent.Parent.MouseButton1Up)
+				RobuxProductDialogConnection1:Disconnect()
+			end
+		end
+	end
+end)
+
+
+RobuxProductDialogConnection2 = Player.PlayerGui.DialogApp.Dialog:GetPropertyChangedSignal("Visible"):Connect(function()
+	if not Player.PlayerGui.DialogApp.Dialog.Visible then return end
+	Player.PlayerGui.DialogApp.Dialog:WaitForChild("RobuxProductDialog")
+	if not Player.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Visible then return end
+	Player.PlayerGui.DialogApp.Dialog.RobuxProductDialog:WaitForChild("Buttons")
+	task.wait()
+	for _, v in Player.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Buttons:GetDescendants() do
+		if v.Name == "TextLabel" then
+			if v.Text == "No Thanks" then
+				firesignal(v.Parent.Parent.MouseButton1Down)
+				firesignal(v.Parent.Parent.MouseButton1Click)
+				firesignal(v.Parent.Parent.MouseButton1Up)
+				RobuxProductDialogConnection2:Disconnect()
+			end
+		end
+	end
+end)
+
+
+DailyClaimConnection = Player.PlayerGui.DailyLoginApp:GetPropertyChangedSignal("Enabled"):Connect(function()
+	dailyLoginAppClick()
+end)
+
+Player.PlayerGui.DialogApp.Dialog.NormalDialog:GetPropertyChangedSignal("Visible"):Connect(function()
+    if Player.PlayerGui.DialogApp.Dialog.NormalDialog.Visible then
+        Player.PlayerGui.DialogApp.Dialog.NormalDialog:WaitForChild("Info")
+        Player.PlayerGui.DialogApp.Dialog.NormalDialog.Info:WaitForChild("TextLabel")
+        Player.PlayerGui.DialogApp.Dialog.NormalDialog.Info.TextLabel:GetPropertyChangedSignal("Text"):Connect(function()
+            task.wait(2)
+            if Player.PlayerGui.DialogApp.Dialog.NormalDialog.Info.TextLabel.Text:match("You have been awarded") or Player.PlayerGui.DialogApp.Dialog.NormalDialog.Info.TextLabel.Text:match("was added to your inventory") then
+                for i, v in pairs(Player.PlayerGui.DialogApp.Dialog["NormalDialog"].Buttons:GetDescendants()) do
+                    if v.Name == "TextLabel" then
+                        if v.Text == "Awesome!" then
+                            clickGuiButton(v.Parent.Parent)
+                            break
+                        end
+                    end
+                end
+            elseif Player.PlayerGui.DialogApp.Dialog.NormalDialog.Info.TextLabel.Text:match("Are you subscribed") then
+                FireButton("No")
+            elseif Player.PlayerGui.DialogApp.Dialog.NormalDialog.Info.TextLabel.Text:match("You found a") then
+                FireButton("Okay")
+            end
+        end)
+    end
+end)
+
+repeat task.wait(1) until Player.PlayerGui.NewsApp.Enabled
+
+if Player.PlayerGui.NewsApp.Enabled then
+	local AbsPlay = Player.PlayerGui.NewsApp
+		:WaitForChild("EnclosingFrame")
+		:WaitForChild("MainFrame")
+		:WaitForChild("Contents")
+		:WaitForChild("PlayButton")
+
+	firesignal(AbsPlay.MouseButton1Down)
+	firesignal(AbsPlay.MouseButton1Click)
+	firesignal(AbsPlay.MouseButton1Up)
 end
 
-GoToMainMap = function()
-    local stA = tick()
-    SetLocation("Winter2024Shop", "MainDoor")
-    --if workspace:FindFirstChildWhichIsA("Terrain") then workspace.Terrain:Clear() end
-    repeat task.wait(1) until (game.workspace.Interiors:FindFirstChildWhichIsA("Model") and game.workspace.Interiors:FindFirstChild("Winter2024Shop")) or (tick() - stA >= 200)
-    CreateTempPart()
-    if workspace:FindFirstChildWhichIsA("Terrain") then workspace.Terrain:Clear() end
-    return false
+if Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Visible then --Baby, ChooseParent
+	firesignal(Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Baby.MouseButton1Click)
+	RoleChooserDialogConnection:Disconnect()
 end
+
+-- Load in house
+ReplicatedStorage:WaitForChild("API"):WaitForChild("HousingAPI/SetDoorLocked"):InvokeServer(true)
+repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+
+if Player.PlayerGui.DialogApp.Dialog.NormalDialog.Info.TextLabel.Text:match("Thanks for subscribing!") then
+	FireButton("Okay")
+end
+
+if Player.PlayerGui.DialogApp.Dialog.NormalDialog.Info.TextLabel.Text:match("Are you subscribed") then
+	FireButton("No")
+end
+
+if Player.PlayerGui.DialogApp.Dialog.NormalDialog.Info.TextLabel.Text:match("You have been awarded") then
+	FireButton("Awesome!")
+end
+
+dailyLoginAppClick()
+
+-- Minigame Code
+
+Player.PlayerGui.FrostclawsRevengeUpgradeApp.Background.Upgrades.ChildAdded:Connect(function(child)
+    if child.Name ~= "Upgrade1" then return end
+    child:WaitForChild("Icon")
+    child.Icon:WaitForChild("Container")
+    child.Icon.Container:WaitForChild("Button")
+
+    local count = 0
+    repeat
+        task.wait(1)
+        if child:FindFirstChild("Icon") then
+            firesignal(child.Icon.Container.Button.Activated)
+        end
+        count += 1
+    until not Player.PlayerGui.FrostclawsRevengeUpgradeApp.Enabled or count > 15
+
+    print("[Rolox Event Script] : Upgrade Selected")
+end)
+
+function farmGingerbreads()
+    currentFarmGingerbread = true
+
+    local GingerbreadMarkers = RS.Resources.IceSkating.GingerbreadMarkers
+    for _, v in GingerbreadMarkers:GetChildren() do
+        if v:IsA("BasePart") and not ClientData.get_data()[Player.Name].winter_2024_gingerbread_captured_list[v.Name] then
+            RS.API:FindFirstChild("WinterEventAPI/PickUpGingerbread"):InvokeServer(v.Name)
+        end
+    end
+    RS.API:FindFirstChild("WinterEventAPI/RedeemPendingGingerbread"):FireServer()
+
+    currentFarmGingerbread = false
+end
+
+function getEventCurrency()
+    return (ClientData.get_data()[Player.Name][require(RS.SharedModules.SharedDB.AltCurrencyData)["name"]] or 0)
+end
+
+function ChangeDestination(zone)
+    print("Old Destination:", FrostclawsRevengeMinigameClient["join_zone_destination_id"])
+    FrostclawsRevengeMinigameClient["join_zone_destination_id"] = zone
+    print("New Destination:", FrostclawsRevengeMinigameClient["join_zone_destination_id"])
+end
+
+function getMinigameId()
+    local st = tick()
+    repeat task.wait() until (workspace.Interiors:FindFirstChildWhichIsA("Model") and (workspace.Interiors:FindFirstChildWhichIsA("Model").Name):match("Frostclaw")) or (tick() - st >= 30)
+    if (workspace.Interiors:FindFirstChildWhichIsA("Model").Name):match("Frostclaw") then
+        local name = workspace.Interiors:FindFirstChildWhichIsA("Model").Name
+        return name:split("::")[2]
+    end
+end
+
+function isGameActive()
+    if workspace.Interiors:FindFirstChildWhichIsA("Model") then
+        return (workspace.Interiors:FindFirstChildWhichIsA("Model").Name):match("Frostclaw")
+    end
+end
+
+function attackAllEnemies(gameID)
+    for _, v in workspace.Minigames[`FrostclawsRevengeInterior::{gameID}`]:WaitForChild("FrostclawsRevengeEnemies"):GetChildren() do
+        local args = {
+            [1] = "frostclaws_revenge::"..gameID,
+            [2] = "hit_enemies",
+            [3] = {v.Name},
+            [4] = "sword_slash"
+        }
+        RS.API["MinigameAPI/MessageServer"]:FireServer(unpack(args))
+    end
+end
+
+function StartMinigame()
+    local success = RS.API["MinigameAPI/LobbyCreate"]:InvokeServer("frostclaws_revenge")
+    if success then
+        RS.API["MinigameAPI/LobbyStart"]:FireServer()
+        return true
+    else
+        task.wait(1)
+        return StartMinigame()
+    end
+end
+
+-- Optimization
+networkSettings = settings().Network
+renderSettings = settings().Rendering
+physicsSettings = settings()['Physics']
+gameSettings = settings()["Game Options"]
+userGameSettings = UserSettings():FindService("UserGameSettings") or UserSettings():GetService("UserGameSettings")
+
+-- -- Render Settings
+renderSettings.QualityLevel = Enum.QualityLevel.Level01
+renderSettings.ShowBoundingBoxes = false
+renderSettings.RenderCSGTrianglesDebug = false
+renderSettings.MeshCacheSize = 0
+renderSettings.GraphicsMode = Enum.GraphicsMode.NoGraphics
+renderSettings.MeshCacheSize = Enum.MeshPartDetailLevel.Level01
+renderSettings.MeshPartDetailLevel = Enum.MeshPartDetailLevel.Level01
+renderSettings.EagerBulkExecution = false
+renderSettings.EnableFRM = true
+renderSettings.AutoFRMLevel = 0
+renderSettings.ExportMergeByMaterial = false
+renderSettings.ReloadAssets = false 
+renderSettings.MeshPartDetailLevel = "Level00"
+renderSettings.QualityLevel = "Level01"
+renderSettings.EditQualityLevel = "Level01"
+
+-- -- User Game Settings
+userGameSettings.SavedQualityLevel = Enum.SavedQualitySetting.QualityLevel1
+userGameSettings.HasEverUsedVR = false 
+userGameSettings.ChatVisible = false
+userGameSettings.AllTutorialsDisabled = false
+userGameSettings.Fullscreen = false
+userGameSettings.GraphicsQualityLevel = 0
+userGameSettings.SavedQualityLevel = 0 
+
+
+--Physics Settings 
+physicsSettings.AllowSleep = true 
+physicsSettings.AreAnchorsShown = false 
+physicsSettings.AreAssembliesShown = false 
+physicsSettings.AreAssemblyCentersOfMassShown = false 
+physicsSettings.AreAwakePartsHighlighted = false 
+physicsSettings.AreBodyTypesShown = false 
+physicsSettings.AreCollisionCostsShown = false 
+physicsSettings.AreConstraintForcesShownForSelectedOrHoveredInstances = false 
+physicsSettings.AreContactForcesShownForSelectedOrHoveredAssemblies = false 
+physicsSettings.AreContactIslandsShown = false 
+physicsSettings.AreContactPointsShown = false 
+physicsSettings.AreJointCoordinatesShown = false 
+physicsSettings.AreMagnitudesShownForDrawnForcesAndTorques = false 
+physicsSettings.AreMechanismsShown = false 
+physicsSettings.AreModelCoordsShown = false 
+physicsSettings.AreOwnersShown = false 
+physicsSettings.ArePartCoordsShown = false 
+physicsSettings.AreRegionsShown = false 
+physicsSettings.AreSolverIslandsShown = false 
+physicsSettings.AreTerrainReplicationRegionsShown = false 
+physicsSettings.AreTimestepsShown = false 
+physicsSettings.AreUnalignedPartsShown = false 
+physicsSettings.AreWorldCoordsShown = false 
+physicsSettings.DisableCSGv2 = true 
+physicsSettings.ForceDrawScale = 0 
+physicsSettings.IsInterpolationThrottleShown = false 
+physicsSettings.IsReceiveAgeShown = false 
+physicsSettings.IsTreeShown = false 
+physicsSettings.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
+physicsSettings.ShowDecompositionGeometry = false 
+physicsSettings.ThrottleAdjustTime = 1
+
+-- Network Settings
+networkSettings.PrintPhysicsErrors = false
+networkSettings.PrintJoinSizeBreakdown = false
+networkSettings.PrintStreamInstanceQuota = false
+networkSettings.RandomizeJoinInstanceOrder = false
+networkSettings.RenderStreamedRegions = false
+networkSettings.ShowActiveAnimationAsset = false
 
 function Optimizer()
     print("-- Boost Performance Activated --")
@@ -278,80 +450,6 @@ function Optimizer()
     end)
 end
 
-function CreateTempPart()
-    if workspace:FindFirstChild("TempPartA") then 
-        workspace.TempPartA:Destroy() 
-    end
-    if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then  
-        game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart").Anchored = true  
-        local a = Instance.new("Part", workspace)
-        a.Size = Vector3.new(500,0,500)
-        a.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame + Vector3.new(0, -2, 0)
-        a.CanCollide = true 
-        a.Anchored = true 
-        a.Transparency = 1 
-        a.Name = "TempPartA"
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = a.CFrame + Vector3.new(0, 1, 0)
-        Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Landed)
-    end
-end
-
-function GetMainMap()
-    return workspace.Interiors:FindFirstChild("Winter2024Shop")
-end
-
-function GetLobby()
-    repeat task.wait() until workspace.Interiors:FindFirstChild("Winter2024Shop")
-    repeat task.wait() until workspace.Interiors["Winter2024Shop"]:FindFirstChild("JoinZones")
-    repeat task.wait() until workspace.Interiors["Winter2024Shop"].JoinZones:FindFirstChild("SpleefMinigame")
-    repeat task.wait() until workspace.Interiors["Winter2024Shop"].JoinZones.SpleefMinigame:FindFirstChild("Ring")
-    local ringPos = workspace.Interiors["Winter2024Shop"].JoinZones.SpleefMinigame.Ring.Position
-    if ((ringPos - HRP.Position).Magnitude <= 15) or (ringPos.Y - HRP.Position.Y >= 0.50) then
-        return true
-    end
-    return false
-end
-
-function farmGingerbreads()
-    for _, v in RS.Resources.IceSkating.GingerbreadMarkers:GetChildren() do
-        if v:IsA("BasePart") then
-            local a,b = RS.API:FindFirstChild("WinterEventAPI/PickUpGingerbread"):InvokeServer(v.Name)
-            task.wait()
-        end
-    end
-    task.wait(1)
-    RS.API:FindFirstChild("WinterEventAPI/RedeemPendingGingerbread"):FireServer()
-end
-
-function timeToSeconds(timeString)
-    local minutes, seconds = string.match(timeString, "(%d+):(%d+)")
-    local totalSeconds = tonumber(minutes) * 60 + tonumber(seconds)
-    return totalSeconds
-end
-
-function PlaceFloorAtSpleefMinigame()
-    if workspace:FindFirstChild("SpleefLocation") then return end
-
-    local floor = workspace.Interiors:WaitForChild("SpleefMinigame"):WaitForChild("Minigame"):WaitForChild("Floor")
-    local part = Instance.new("Part")
-    part.Position = floor.Position + Vector3.new(0, 100, 0)
-    part.Size = Vector3.new(200, 2, 200)
-    part.Anchored = true
-    part.Transparency = 0
-    part.Name = "SpleefLocation"
-    part.Parent = workspace
-    part.BrickColor = BrickColor.new("Bright red")
-end
-
-function reset_spleef_game()
-    local OrigThreadID = get_thread_identity()
-    task.wait()
-    set_thread_identity(2)
-    MinigameClient._exit_minigame_sequence(SpleefMinigameClient)
-    set_thread_identity(OrigThreadID)
-end
-
--- Optimization
 workspace.Pets.ChildAdded:Connect(function(c)
     task.wait(1)
     for i, v in pairs(workspace.Pets:GetChildren()) do
@@ -369,24 +467,16 @@ workspace.PlayerCharacters.ChildAdded:Connect(function(c)
 end)
 
 workspace.Interiors.ChildAdded:Connect(function(c)
-    task.wait(1)
-    if workspace.Interiors:FindFirstChild("Winter2024Shop") then
+    task.wait(0.1)
+    if c.Name == "Winter2024Shop" then
         for i,v in pairs(workspace.Interiors.Winter2024Shop:GetChildren()) do
             if v.Name == "Visual" or v.Name == "Mannequins" or v.Name == "ShopPedestals" then
-                if v.Name == "Visual" then
-                    for l,o in pairs(workspace.Interiors.Winter2024Shop.Visual:GetChildren()) do
-                        if o.Name ~= "Model" then
-                            o.Parent = game.ReplicatedStorage
-                        end
-                    end
-                else
-                    v.Parent = game.ReplicatedStorage
-                end
+                v.Parent = game.ReplicatedStorage
                 task.wait()
             end
         end
-    elseif workspace.Interiors:FindFirstChild("SpleefMinigame") then
-        for i,v in pairs(workspace.Interiors.SpleefMinigame:GetChildren()) do
+    elseif c.Name:match("FrostclawsRevengeInterior") then
+        for i,v in pairs(c:GetDescendants()) do
             if v.Name == "Visual" then
                 v.Parent = game.ReplicatedStorage
                 task.wait()
@@ -396,120 +486,43 @@ workspace.Interiors.ChildAdded:Connect(function(c)
     end
 end)
 
-Player.PlayerGui.MinigameInGameApp:GetPropertyChangedSignal("Enabled"):Connect(function()
-    if Player.PlayerGui.MinigameInGameApp.Enabled then
-        Player.PlayerGui.MinigameInGameApp:WaitForChild("Body")
-        Player.PlayerGui.MinigameInGameApp.Body:WaitForChild("Middle")
-        Player.PlayerGui.MinigameInGameApp.Body.Middle:WaitForChild("Container")
-        Player.PlayerGui.MinigameInGameApp.Body.Middle.Container:WaitForChild("TitleLabel")
-        if Player.PlayerGui.MinigameInGameApp.Body.Middle.Container.TitleLabel.Text:match("MELT OFF") then
-            PlaceFloorAtSpleefMinigame()
-        end
-    end
-end)
-
 Optimizer()
 
-spawn(function()
-    while task.wait(5) do
-        pcall(function()
-            if not GameStatus() and Player.PlayerGui.MinigameInGameApp.Body.Left.Container.ValueLabel.Text == "00:00" and Player.PlayerGui.MinigameInGameApp.Enabled then
-                task.wait(15)
-                if not GameStatus() and Player.PlayerGui.MinigameInGameApp.Body.Left.Container.ValueLabel.Text == "00:00" and Player.PlayerGui.MinigameInGameApp.Enabled then
-                    print("===== ACC STUCKK ====, trying to reset")
-                    reset_spleef_game()
-                    task.wait(2)
-                end
-            end
-        end)
+--ChangeDestination("School")
+Player.Character.HumanoidRootPart.Anchored = true
 
-        pcall(function()
-            -- Winter Advent Manager Claim
-            Winter2024AdventManager = ClientData.get_data()[game.Players.LocalPlayer.Name]["winter_2024_advent_manager"]
-            if not Winter2024AdventManager["rewards_claimed"][#Winter2024AdventManager["replicated_rewards"]] then
-                RS.API:WaitForChild("WinterEventAPI/AdventCalendarTryTakeReward"):InvokeServer(i)
-                print("Claimed", v["amount"], findItemName(v["kind"], v["category"]))
-            end
-        end)
-
-        if (not GameLoading() and not GameStatus()) then
-            print("== Starting Farming Gingerbread ==")
-            farmGingerbreads()
-            print("== Ended Farming Gingerbread ==")
-            task.wait(300)
-        end
+while task.wait() do
+    Winter2024AdventManager = ClientData.get_data()[game.Players.LocalPlayer.Name]["winter_2024_advent_manager"]
+    if not Winter2024AdventManager["rewards_claimed"][#Winter2024AdventManager["replicated_rewards"]] then
+        RS.API:WaitForChild("WinterEventAPI/AdventCalendarTryTakeReward"):InvokeServer(i)
     end
-end)
 
+    local startGingerbread = getEventCurrency()
+    print("[Rolox Event Script] : Start Gingerbread:", startGingerbread)
 
-print("== Starting Auto Winter 2024 Event ==")
-while task.wait(0.5) do
-    if GetMainMap() then
-        pcall(function()
-            if GetLobby() then
-                if GameLoading() then
-                    RS.API:FindFirstChild("MinigameAPI/AttemptJoin"):FireServer("spleef_minigame", true)
-                    task.wait(10)
-                else
-                    HRP.CFrame = CFrame.new(-3956, 11155, -15888) * CFrame.Angles(0, 0, 0)
-                    CreateTempPart()
-                end
-            else
-                print("TPing to Join Zone")
-                pcall(function()
-                    HRP.Anchored = true
-                    HRP.CFrame = CFrame.new(-3956, 11155, -15888) * CFrame.Angles(0, 0, 0)
-                    CreateTempPart()
-                    HRP.Anchored = false
-                end)
-                RS.API:FindFirstChild("MinigameAPI/AttemptJoin"):FireServer("spleef_minigame", true)
-            end
-        end)
-    elseif GameStatus() and workspace.Interiors:FindFirstChild("SpleefMinigame") then
-        print("Waiting for Minigame to load..")
-        repeat task.wait(0.50) until workspace.Interiors:FindFirstChild("SpleefMinigame") and workspace.Interiors.SpleefMinigame:FindFirstChild("Minigame") 
-        print("Starting Minigame..")
-        HRP.Anchored = true
-        task.wait(1)
+    local gameStartTime = tick()
 
-        CreateTempPart()
-        HRP.Anchored = true
+    StartMinigame()
+    print("[Rolox Event Script] : Minigame Started")
 
-        task.wait(1)
-        print("Completing minigame..")
-        local startTimeForMinigameOverCheck = os.time()
-        --repeat task.wait()
-            -- Minigame Code
-            --if (Vector3.new(-12026, 11795, -16005) - HRP.Position).Magnitude > 15 then
-                --HRP.Anchored = true
-                --HRP.CFrame = CFrame.new(-12026, 11795, -16005) * CFrame.Angles(0, 0, 0)
-                --CreateTempPart()
-                --HRP.Anchored = true
-            --end
+    local minigameId = getMinigameId()
+    if minigameId then
+        print("[Rolox Event Script] : Minigame ID is", minigameId)
 
-            print("Waiting:", timeToSeconds(Player.PlayerGui.MinigameInGameApp.Body.Left.Container.ValueLabel.Text))
-            task.wait(timeToSeconds(Player.PlayerGui.MinigameInGameApp.Body.Left.Container.ValueLabel.Text))
-
-            --local st = os.time()
-            --while os.time() - st <= timeToSeconds(Player.PlayerGui.MinigameInGameApp.Body.Left.Container.ValueLabel.Text) do
-            --    task.wait(1)
-                --if not (game.Workspace.Interiors:FindFirstChild("SpleefMinigame") and GameStatus() and Player.PlayerGui.MinigameInGameApp.Enabled) then
-                --    startTimeForMinigameOverCheck = startTimeForMinigameOverCheck - 150
-                --    break
-                --end
-            --end
-        --until not (game.Workspace.Interiors:FindFirstChild("SpleefMinigame") and GameStatus() and Player.PlayerGui.MinigameInGameApp.Enabled) or (os.time() - startTimeForMinigameOverCheck >= 150)
-        task.wait(1)
-        print("Minigame Ended!")
-        HRP.Anchored = true
-        for i = 1, 10 do
-            task.wait(1)
-            HRP.CFrame = CFrame.new(-3956, 11155, -15888) * CFrame.Angles(0, 0, 0)
-            CreateTempPart()
+        print("[Rolox Event Script] : Playing Minigame (attacking enemies)")
+        while isGameActive() and task.wait() do
+            attackAllEnemies(minigameId)
         end
+
+        print("[Rolox Event Script] : Game Over! Took", math.floor(tick()-gameStartTime), "seconds long!")
+
+        print("[Rolox Event Script] : Gained Gingerbread:", getEventCurrency()-startGingerbread)
+        print("[Rolox Event Script] : Total Gingerbread:", getEventCurrency())
     else
-        print("Going to Main Map..")
-        GoToMainMap()
-        print("Arrived at Map..")
+        print("[Rolox Event Script] [ERROR] : Failed to Start Minigame, retrying..")
+    end
+
+    if not currentFarmGingerbread then
+        spawn(farmGingerbreads)
     end
 end
