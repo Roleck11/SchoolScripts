@@ -146,8 +146,15 @@ Player.PlayerGui.DialogApp.Dialog.NormalDialog:GetPropertyChangedSignal("Visible
                 end
             elseif Player.PlayerGui.DialogApp.Dialog.NormalDialog.Info.TextLabel.Text:match("Are you subscribed") then
                 FireButton("No")
-            elseif Player.PlayerGui.DialogApp.Dialog.NormalDialog.Info.TextLabel.Text:match("You found a") then
-                FireButton("Okay")
+            elseif Player.PlayerGui.DialogApp.Dialog.NormalDialog.Info.TextLabel.Text:match("You found a") or Player.PlayerGui.DialogApp.Dialog.NormalDialog.Info.TextLabel.Text:match("Subscribe to") then
+                for i, v in pairs(Player.PlayerGui.DialogApp.Dialog["NormalDialog"].Buttons:GetDescendants()) do
+                    if v.Name == "TextLabel" then
+                        if v.Text == "Okay" then
+                            clickGuiButton(v.Parent.Parent)
+                            break
+                        end
+                    end
+                end
             end
         end)
     end
@@ -275,7 +282,31 @@ function StartMinigame()
     end
 end
 
+function CreatePlatform()
+    if workspace:FindFirstChild("TempPartA") then 
+        workspace.TempPartA:Destroy() 
+    end
+    if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then  
+        game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart").Anchored = true
+        local a = Instance.new("Part", workspace)
+        a.Size = Vector3.new(500,0,500)
+        a.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame + Vector3.new(0, -2, 0)
+        a.CanCollide = true 
+        a.Anchored = true 
+        a.Transparency = 1 
+        a.Name = "TempPartA"
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = a.CFrame + Vector3.new(0, 1, 0)
+        Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Landed)
+    end
+end
+
 -- Optimization
+require(RS.ClientModules.Core.UIManager.Apps.TransitionsApp).transition = function() return end 
+require(RS.ClientModules.Core.UIManager.Apps.TransitionsApp).sudden_fill = function() return end
+if Player.PlayerGui.TransitionsApp:FindFirstChild("Whiteout").Visible then 
+    Player.PlayerGui.TransitionsApp:FindFirstChild("Whiteout").Visible = false 
+end
+
 networkSettings = settings().Network
 renderSettings = settings().Rendering
 physicsSettings = settings()['Physics']
@@ -350,8 +381,9 @@ networkSettings.RandomizeJoinInstanceOrder = false
 networkSettings.RenderStreamedRegions = false
 networkSettings.ShowActiveAnimationAsset = false
 
+print("[Optimizer] : Level 1 Executed")
+
 function Optimizer()
-    print("-- Boost Performance Activated --")
     UserSettings():GetService("UserGameSettings").MasterVolume = 0
     local decalsyeeted = true
     local g = game
@@ -451,6 +483,7 @@ function Optimizer()
         end
         game.Lighting.Brightness = 0
     end)
+    print("[Optimizer] : Level 2 Executed")
 end
 
 workspace.Pets.ChildAdded:Connect(function(c)
@@ -472,6 +505,7 @@ end)
 workspace.Interiors.ChildAdded:Connect(function(c)
     task.wait(0.1)
     if c.Name == "Winter2024Shop" then
+        CreatePlatform()
         for i,v in pairs(workspace.Interiors.Winter2024Shop:GetChildren()) do
             if v.Name == "Visual" or v.Name == "Mannequins" or v.Name == "ShopPedestals" then
                 v.Parent = game.ReplicatedStorage
@@ -490,6 +524,38 @@ workspace.Interiors.ChildAdded:Connect(function(c)
 end)
 
 Optimizer()
+
+pcall(function()
+    for i,v in pairs(game:GetService("ReplicatedStorage").ClientServices:GetDescendants()) do 
+        if v:IsA("ModuleScript") and require(v) and require(v).init and v.Name ~= "DoorsClient" and v.Name ~= "ResetHandler" then 
+        require(v).init = function() return end 
+        end 
+    end 
+    for i,v in pairs(require(game:GetService("ReplicatedStorage").ClientModules.Core.WeatherClient.WeatherClient)) do 
+        if type(v) == "function" then 
+        v = function() return end 
+        end
+    end   
+    for i,v in pairs(game:GetService("ReplicatedStorage").ClientModules.Game.PetEntities.PetPerformancesFolder.Emotes:GetChildren()) do 
+        if v:IsA("ModuleScript") then 
+            require(v).step = function() return end 
+        end
+    end    
+    for i,v in pairs(game:GetService("ReplicatedStorage").ClientModules.Game.PetEntities.PetReactions:GetChildren()) do 
+        require(v).init_reaction = function() return end 
+    end  
+    for i,v in pairs(game:GetService("ReplicatedStorage").ClientModules.Game.PetEntities.PetPerformancesFolder.Transitions:GetChildren()) do 
+        if v:IsA("ModuleScript") then 
+            require(v).step = function() return end 
+        end
+    end   
+    for Data,Effect in pairs(require(game:GetService("ReplicatedStorage").ClientModules.Core.UIManager.Apps.SpecialEffectsApp)) do 
+        if type(Data) == "function" then 
+            Data = function() return end 
+        end
+    end
+    print("[Optimizer] : Level 3 Executed")
+end)
 
 --ChangeDestination("School")
 Player.Character.HumanoidRootPart.Anchored = true
@@ -528,4 +594,6 @@ while task.wait() do
     if not currentFarmGingerbread then
         spawn(farmGingerbreads)
     end
+
+    pcall(CreatePlatform)
 end
