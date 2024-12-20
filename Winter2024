@@ -223,6 +223,7 @@ Player.PlayerGui.FrostclawsRevengeUpgradeApp.Background.Upgrades.ChildAdded:Conn
     print("[Rolox Event Script] : Upgrade Selected")
 end)
 
+--[[
 function farmGingerbreads()
     local GingerbreadMarkers = RS.Resources.IceSkating.GingerbreadMarkers
     for _, v in GingerbreadMarkers:GetChildren() do
@@ -232,6 +233,7 @@ function farmGingerbreads()
     end
     RS.API:FindFirstChild("WinterEventAPI/RedeemPendingGingerbread"):FireServer()
 end
+]]
 
 function getEventCurrency()
     return (ClientData.get_data()[Player.Name][require(RS.SharedModules.SharedDB.AltCurrencyData)["name"]] or 0)
@@ -240,28 +242,51 @@ end
 function ChangeDestination(zone)
     print("Old Destination:", FrostclawsRevengeMinigameClient["join_zone_destination_id"])
     FrostclawsRevengeMinigameClient["join_zone_destination_id"] = zone
+    FrostclawsRevengeMinigameClient["minigame_options"]["join_zone_destination_id"] = zone   
     print("New Destination:", FrostclawsRevengeMinigameClient["join_zone_destination_id"])
 end
 
 local function createLobby()
-    return RS.API["MinigameAPI/LobbyCreate"]:InvokeServer("frostclaws_revenge")
+    print("Create lobby")
+    local success, output = pcall(function()
+        return RS.API["MinigameAPI/LobbyCreate"]:InvokeServer("frostclaws_revenge")
+    end)
+    print("lobby created")
+    if not success then
+        print("error occured:", output)
+    else
+        print("lobby :", output)
+        return output
+    end
+    
+    return x
 end
 
 local function startLobby()
+    print("Start lobby")
     RS.API["MinigameAPI/LobbyStart"]:FireServer()
+    print("lobby started")
+end
+
+function GetMinigameInterior()
+    for i, v in pairs(game.workspace.Interiors:GetChildren()) do
+        if v.Name:match("FrostclawsRevengeInterior") then
+            return v
+        end
+    end
 end
 
 function getMinigameId()
     local gameId
-    local model = workspace.Interiors:FindFirstChildWhichIsA("Model")
+    local model = GetMinigameInterior()
     if not model then
         local count = 0
         repeat
             task.wait(1)
             count += 1
-            model = workspace.Interiors:FindFirstChildWhichIsA("Model")
-        until model  or count > 30
-        if count > 30 then
+            model = GetMinigameInterior()
+        until model  or count > 10
+        if count > 10 then
             print("wouldnt get model")
             return nil
         end
@@ -304,6 +329,8 @@ function StartGame()
     local minigameId = getMinigameId()
     if not minigameId then return end
 
+    ChangeDestination("School")
+
     local isGameActive = true
 
     while isGameActive do
@@ -321,32 +348,36 @@ function StartGame()
     repeat
         count += 1
         task.wait(1)
-    until not workspace.Minigames:FindFirstChild(`FrostclawsRevengeInterior::{minigameId}`) or count > 30
+    until not workspace.Interiors:FindFirstChild(`FrostclawsRevengeInterior::{minigameId}`) or count > 30
+
+    CreatePlatform()
+    game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart").Anchored = true
 end
 
 function CreateAndStartLobby()
-    if not createLobby() then
-        createLobby()
-    end
-
+    print("createNStart Lobby")
     local count = 0
     local name
     repeat
+        createLobby()
+        task.wait(1)
         startLobby()
         count += 1
-        task.wait(2)
-        local model = workspace.Interiors:FindFirstChildWhichIsA("Model")
-        if model then
-            name = model.Name:match("FrostclawsRevengeInterior")
-            print(name)
+        task.wait(4)
+        for i, v in pairs(game.workspace.Interiors:GetChildren()) do
+            if v.Name:match("FrostclawsRevengeInterior") then
+                name = v.Name:match("FrostclawsRevengeInterior")
+            end
         end
-    until name == "FrostclawsRevengeInterior" or count > 30
-    if count > 30 then
+    until name == "FrostclawsRevengeInterior" or count > 5
+    if count > 5 then
         return false
     end
 
     return true
 end
+
+
 
 function CreatePlatform()
     if workspace:FindFirstChild("TempPartA") then 
@@ -638,14 +669,14 @@ spawn(function()
             RS.API:WaitForChild("WinterEventAPI/AdventCalendarTryTakeReward"):InvokeServer(i)
         end
 
-        farmGingerbreads()
+        --farmGingerbreads()
 
         task.wait(200)
     end
 end)
 
---ChangeDestination("School")
 Player.Character.HumanoidRootPart.Anchored = true
+ChangeDestination("School")
 
 while task.wait() do
     local startGingerbread = getEventCurrency()
