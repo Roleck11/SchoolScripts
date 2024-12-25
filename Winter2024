@@ -13,6 +13,8 @@ local MinigameClient = require(RS.ClientModules.Game.MinigameHelpers.MinigameCli
 local SpleefMinigameClient = require(RS.SharedModules.ContentPacks.Winter2024.Minigames.SpleefMinigameClient)
 local FrostclawsRevengeMinigameClient = require(RS.SharedModules.ContentPacks.Winter2024.Minigames.FrostclawsRevengeMinigameClient)
 
+CurrentMapName = "MainMap!" .. LiveOpsMapSwap.get_current_map_type()
+
 local gingerbeadIds = {
     ['Winter2024Shop'] = {
         '{0f2ada20-90cd-44b4-932d-68815f8f7b65}',
@@ -63,7 +65,7 @@ local gingerbeadIds = {
         '{a948993e-2367-4b69-9be5-af5c0b5c320a}',
         '{e88cb67b-24ae-49d3-ac52-b44c6d84d1aa}',
     },
-    ['MainMap!Snow'] = {
+    [CurrentMapName] = {
         '{29580925-384D-4CF6-810A-5B2FBEBE14EF}',
         '{AFFECD3D-9FCD-4822-BDF8-1B7F589620DD}',
         '{2BEB302F-EB22-4403-B2E7-F4239A306A9C}',
@@ -453,9 +455,9 @@ function farmGingerbreads()
             RS.API:FindFirstChild('WinterEventAPI/PickUpGingerbread'):InvokeServer('Winter2024Shop', id)
         end
     end
-    for _, id in gingerbeadIds['MainMap!Snow']do
-        if not gingerbreadCaptured['MainMap!Snow'] or not gingerbreadCaptured['MainMap!Snow'][id] then
-            RS.API:FindFirstChild('WinterEventAPI/PickUpGingerbread'):InvokeServer('MainMap!Snow', id)
+    for _, id in gingerbeadIds[CurrentMapName]do
+        if not gingerbreadCaptured[CurrentMapName] or not gingerbreadCaptured[CurrentMapName][id] then
+            RS.API:FindFirstChild('WinterEventAPI/PickUpGingerbread'):InvokeServer(CurrentMapName, id)
         end
     end
 
