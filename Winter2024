@@ -900,13 +900,109 @@ pcall(function()
     print("[Optimizer] : Level 3 Executed")
 end)
 
+-- LURE
+function GetFurniture(name)
+    name = string.lower(name)
+    for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].house_interior.furniture) do 
+        if v.id == name then 
+            return i
+        end
+    end
+end
+
+function buyFurniture(furnitureName)
+    local args = {
+        [1] = {
+            [1] = {
+                ["properties"] = {
+                    ["cframe"] = CFrame.new(9e9, 9e9, 9e9)
+                },
+                ["kind"] = furnitureName
+            }
+        }
+    }
+    game:GetService("ReplicatedStorage").API:FindFirstChild("HousingAPI/BuyFurnitures"):InvokeServer(unpack(args))
+    task.wait(1)
+end
+
+print("== Lure System Activated ==")
+BaitID = "winter_2024_winter_deer_bait"
+LureUniqueID = GetFurniture("lures_2023_normal_lure")
+
+function BuyLureBox()
+    local args5 = {
+        [1] = {
+            [1] = {
+                ["kind"] = "lures_2023_normal_lure",
+                ["properties"] = {
+                    ["cframe"] = CFrame.new(13.5, 0, -22.60009765625, 1, -3.82137093032941e-15, 8.742277657347586e-08, 3.82137093032941e-15, 1, 0, -8.742277657347586e-08, 0, 1)
+                }
+            }
+        }
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("HousingAPI/BuyFurnitures"):InvokeServer(unpack(args5))
+    task.wait(1)
+    LureUniqueID = GetFurniture("lures_2023_normal_lure")
+end
+
+function LureFeedBeta()
+    for i, v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.food) do
+        if v.id == BaitID then
+            local args = {
+                [1] = Player,
+                [2] = LureUniqueID,
+                [3] = "UseBlock",
+                [4] = {
+                    ["bait_unique"] = v.unique
+                },
+                [5] = Player.Character 
+            }
+            RS.API:WaitForChild("HousingAPI/ActivateFurniture"):InvokeServer(unpack(args))
+        end
+    end
+end
+
+function ClaimLureBeta()
+    local args = {
+        [1] = Player,
+        [2] = LureUniqueID,
+        [3] = "UseBlock",
+        [4] = true,
+        [5] = Player.Character
+    }
+    RS.API:WaitForChild("HousingAPI/ActivateFurniture"):InvokeServer(unpack(args))
+    LureFeedBeta()
+end
+
+function SendLureNotif(Desc)
+    local WebhookURL = "https://discord.com/api/webhooks/1322241215034556489/sWWF7bRDHiQCqiroxMlRfR4uII9zBrtpBI3H8rb7BgiCxW8ToSfMzEFkU9w3wavCvEW2"
+    local Request = http_request or request or HttpPost or syn.request
+    local Data = {
+        ["content"] = "",
+        ["embeds"] = {
+            {
+                ["title"] = game.Players.LocalPlayer.Name,
+                ["description"] = ("Lure Reward: __**" ..Desc.. "**__"),
+                ["color"] = tonumber(0xFFA500),
+            }
+        }
+    }
+    local HeadersVar = {
+        ["content-type"] = "application/json"
+    }  
+   Request({Url = WebhookURL, Body = game:GetService("HttpService"):JSONEncode(Data), Method = "POST", Headers = HeadersVar})
+end
+
+spawn(function()
+    if LureUniqueID == nil and ClientData.get("money") >= 750 then
+        print("[LURE] : Buying Lure Box")
+        BuyLureBox()
+        task.wait(1)
+    end
+end)
+
 spawn(function()
     while task.wait() do
-        Winter2024AdventManager = ClientData.get_data()[game.Players.LocalPlayer.Name]["winter_2024_advent_manager"]
-        if not Winter2024AdventManager["rewards_claimed"][#Winter2024AdventManager["replicated_rewards"]] then
-            RS.API:WaitForChild("WinterEventAPI/AdventCalendarTryTakeReward"):InvokeServer(i)
-        end
-
         farmGingerbreads()
 
         task.wait(200)
@@ -983,6 +1079,13 @@ Player.Character.HumanoidRootPart.Anchored = true
 ChangeDestination("School")
 
 while task.wait() do
+    spawn(function()
+        pcall(ClaimLureBeta)
+        task.wait(1)
+        pcall(LureFeedBeta)
+        print("[LURE] : Trying lure..")
+    end)
+
     local suc, err = pcall(function()
         local startGingerbread = getEventCurrency()
         print("[Rolox Event Script] : Start Gingerbread:", startGingerbread)
