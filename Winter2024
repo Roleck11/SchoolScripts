@@ -13,6 +13,10 @@ local MinigameClient = require(RS.ClientModules.Game.MinigameHelpers.MinigameCli
 local SpleefMinigameClient = require(RS.SharedModules.ContentPacks.Winter2024.Minigames.SpleefMinigameClient)
 local FrostclawsRevengeMinigameClient = require(RS.SharedModules.ContentPacks.Winter2024.Minigames.FrostclawsRevengeMinigameClient)
 
+pet_L = 0
+pet_UR = 0
+pet_R = 0
+
 CurrentMapName = "MainMap!" .. LiveOpsMapSwap.get_current_map_type()
 
 local gingerbeadIds = {
@@ -438,6 +442,15 @@ Player.PlayerGui.FrostclawsRevengeUpgradeApp.Background.Upgrades.ChildAdded:Conn
 
     print("[Rolox Event Script] : Upgrade Selected")
 end)
+
+function findPetID(petName)
+    for _, entry in pairs(require(game:GetService("ReplicatedStorage").ClientDB.Inventory.InventoryDB).pets) do
+        if type(entry) == "table" and string.lower(entry.name) == string.lower(petName) and not entry.id:match("minigame") then
+            return entry.id
+        end
+    end
+    return nil
+end
 
 local function disp_time(time)
     local days = math.floor(time / 86400)
@@ -1045,6 +1058,7 @@ local StartEventCurr = (ClientData.get_data()[game.Players.LocalPlayer.Name][req
 local StartTimeAC = os.time()
 
 local function SetStatus()
+    local Potions = tostring((function() local t={} for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.food)do if v.id=="pet_age_potion"then table.insert(t,i)end end return #t end)())
     local EventCurrency = (ClientData.get_data()[game.Players.LocalPlayer.Name][require(game:GetService("ReplicatedStorage").SharedModules.SharedDB.AltCurrencyData)["name"]] or 0)
     local DifEventCur = EventCurrency - StartEventCurr
 
@@ -1052,9 +1066,12 @@ local function SetStatus()
         EventCurrency = EventCurrency .. " (+" .. DifEventCur .. ")"
     end
 
+
     TextLabel.Text = [[<font color="rgb(255,180,180)">]] .. game.Players.LocalPlayer.Name .. [[</font> - RoloxEventFarm
     Event Currency: <font color="rgb(237, 63, 14)">]] .. EventCurrency .. [[</font>
+    Potions: <font color="rgb(252, 207, 71)">]]..Potions..[[</font>
     Total Time: <font color="rgb(137, 41, 255)">]] .. disp_time(os.time() - StartTimeAC) .. [[</font>
+    Lure Pets: <font color="rgb(209, 192, 140)">]] .. tostring(pet_L) .. "L " .. tostring(pet_UR) .. "UR " .. tostring(pet_R) .. "R" .. [[</font>
 
     <font color="rgb(130, 255, 228)">Click anywhere to toggle</font>
     ]]
@@ -1084,6 +1101,19 @@ while task.wait() do
         task.wait(1)
         pcall(LureFeedBeta)
         print("[LURE] : Trying lure..")
+
+        pet_L = 0
+        pet_UR = 0
+        pet_R = 0
+        for i, v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+            if v.id == findPetID("Winter Buck") then
+                pet_L = pet_L + 1
+            elseif v.id == findPetID("Winter Doe") then
+                pet_UR = pet_UR + 1
+            elseif v.id == findPetID("Winter Fawn") then
+                pet_R = pet_R + 1
+            end
+        end
     end)
 
     local suc, err = pcall(function()
