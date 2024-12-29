@@ -1056,9 +1056,14 @@ TextLabel.Text = "Loading.."
 
 local StartEventCurr = (ClientData.get_data()[game.Players.LocalPlayer.Name][require(game:GetService("ReplicatedStorage").SharedModules.SharedDB.AltCurrencyData)["name"]] or 0)
 local StartTimeAC = os.time()
+local StartTinyPots = tostring((function() local t={} for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.food)do if v.id=="tiny_pet_age_potion"then table.insert(t,i)end end return #t end)())
 
 local function SetStatus()
     local Potions = tostring((function() local t={} for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.food)do if v.id=="pet_age_potion"then table.insert(t,i)end end return #t end)())
+    
+    local TinyPotions = tostring((function() local t={} for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.food)do if v.id=="tiny_pet_age_potion"then table.insert(t,i)end end return #t end)())
+    local DifTinyPots = TinyPotions - StartTinyPots
+   
     local EventCurrency = (ClientData.get_data()[game.Players.LocalPlayer.Name][require(game:GetService("ReplicatedStorage").SharedModules.SharedDB.AltCurrencyData)["name"]] or 0)
     local DifEventCur = EventCurrency - StartEventCurr
 
@@ -1066,10 +1071,14 @@ local function SetStatus()
         EventCurrency = EventCurrency .. " (+" .. DifEventCur .. ")"
     end
 
+    if DifTinyPots > 0 then
+        TinyPotions = TinyPotions .. " (+" .. DifTinyPots .. ")"
+    end
 
     TextLabel.Text = [[<font color="rgb(255,180,180)">]] .. game.Players.LocalPlayer.Name .. [[</font> - RoloxEventFarm
     Event Currency: <font color="rgb(237, 63, 14)">]] .. EventCurrency .. [[</font>
     Potions: <font color="rgb(252, 207, 71)">]]..Potions..[[</font>
+    Tiny Potions: <font color="rgb(252, 207, 71)">]]..TinyPotions..[[</font>
     Total Time: <font color="rgb(137, 41, 255)">]] .. disp_time(os.time() - StartTimeAC) .. [[</font>
     Lure Pets: <font color="rgb(209, 192, 140)">]] .. tostring(pet_L) .. "L " .. tostring(pet_UR) .. "UR " .. tostring(pet_R) .. "R" .. [[</font>
 
